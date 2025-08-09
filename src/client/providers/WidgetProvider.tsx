@@ -1,7 +1,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import type { Widget } from '../../model/Widget';
 import type { WidgetType } from '../../model/WidgetType';
-import { cacheUtils, widgetCache, widgetTypeCache } from '../lib/WidgetCache';
+import { cacheUtils, widgetCache, widgetTypeCache } from '../cache/WidgetCache';
 import { PriKey } from '@fjell/core';
 
 interface WidgetContextType {

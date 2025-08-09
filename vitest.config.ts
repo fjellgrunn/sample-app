@@ -9,11 +9,21 @@ export default defineConfig({
         'node_modules/**',
         'dist/**',
         '**/*.test.ts',
+        '**/*.test.tsx',
         'build.js',
         'eslint.config.mjs',
-        'vitest.config.ts'
-      ]
+        'vitest.config.ts',
+        'build-client.js'
+      ],
+      thresholds: {
+        statements: 90,
+        branches: 90,
+        functions: 90,
+        lines: 90
+      }
     },
-    environment: 'node'
+    environment: 'jsdom',
+    setupFiles: ['./tests/setup.ts'],
+    globals: true
   }
 });

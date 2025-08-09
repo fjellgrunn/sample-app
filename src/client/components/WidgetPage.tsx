@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useWidgets } from '../providers/WidgetProvider';
-import { widgetApi } from '../lib/WidgetAPI';
+import { widgetApi } from '../api/WidgetAPI';
 import type { Widget } from '../../model/Widget';
 
 export const WidgetPage: React.FC = () => {
@@ -33,9 +33,9 @@ export const WidgetPage: React.FC = () => {
         }
 
         // If not found in cache, fetch from API
-        const response = await widgetApi.read(id);
-        if (response.success && response.data) {
-          setWidget(response.data);
+        const widget = await widgetApi.get({ kt: 'widget', pk: id });
+        if (widget) {
+          setWidget(widget);
         } else {
           setError('Widget not found');
         }

@@ -99,19 +99,23 @@ export const createWidgetTypeLibrary = (
           if (widgetType.code) {
             const trimmedCode = widgetType.code.trim();
 
-            // Only allow letters and underscores
-            if (!/^[a-zA-Z_]+$/.test(trimmedCode)) {
-              throw new Error('Widget type code must contain only uppercase letters and underscores');
-            }
+            // Only apply format validation when there is a non-empty value after trimming.
+            // Whitespace-only values should be handled by the onCreate validator as a "required" error.
+            if (trimmedCode.length > 0) {
+              // Only allow letters and underscores
+              if (!/^[a-zA-Z_]+$/.test(trimmedCode)) {
+                throw new Error('Widget type code must contain only uppercase letters and underscores');
+              }
 
-            // Reject pure lowercase codes (no underscores) - these indicate format issues
-            if (/^[a-z]+$/.test(trimmedCode)) {
-              throw new Error('Widget type code must contain only uppercase letters and underscores');
-            }
+              // Reject pure lowercase codes (no underscores) - these indicate format issues
+              if (/^[a-z]+$/.test(trimmedCode)) {
+                throw new Error('Widget type code must contain only uppercase letters and underscores');
+              }
 
-            // Reject mixed case codes (contains both upper and lower case)
-            if (/[A-Z]/.test(trimmedCode) && /[a-z]/.test(trimmedCode)) {
-              throw new Error('Widget type code must contain only uppercase letters and underscores');
+              // Reject mixed case codes (contains both upper and lower case)
+              if (/[A-Z]/.test(trimmedCode) && /[a-z]/.test(trimmedCode)) {
+                throw new Error('Widget type code must contain only uppercase letters and underscores');
+              }
             }
           }
 
@@ -139,19 +143,22 @@ export const createWidgetTypeLibrary = (
           if (updates.code) {
             const trimmedCode = updates.code.trim();
 
-            // Only allow letters and underscores
-            if (!/^[a-zA-Z_]+$/.test(trimmedCode)) {
-              throw new Error('Widget type code must contain only uppercase letters and underscores');
-            }
+            // Only apply format validation when there is a non-empty value after trimming.
+            if (trimmedCode.length > 0) {
+              // Only allow letters and underscores
+              if (!/^[a-zA-Z_]+$/.test(trimmedCode)) {
+                throw new Error('Widget type code must contain only uppercase letters and underscores');
+              }
 
-            // Reject pure lowercase codes (no underscores) - these indicate format issues
-            if (/^[a-z]+$/.test(trimmedCode)) {
-              throw new Error('Widget type code must contain only uppercase letters and underscores');
-            }
+              // Reject pure lowercase codes (no underscores) - these indicate format issues
+              if (/^[a-z]+$/.test(trimmedCode)) {
+                throw new Error('Widget type code must contain only uppercase letters and underscores');
+              }
 
-            // Reject mixed case codes (contains both upper and lower case)
-            if (/[A-Z]/.test(trimmedCode) && /[a-z]/.test(trimmedCode)) {
-              throw new Error('Widget type code must contain only uppercase letters and underscores');
+              // Reject mixed case codes (contains both upper and lower case)
+              if (/[A-Z]/.test(trimmedCode) && /[a-z]/.test(trimmedCode)) {
+                throw new Error('Widget type code must contain only uppercase letters and underscores');
+              }
             }
           }
 
