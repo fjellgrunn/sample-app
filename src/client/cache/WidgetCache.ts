@@ -2,7 +2,7 @@ import { Cache, createCache, createRegistry, IndexDBCacheMap } from '@fjell/cach
 import { createCoordinate } from '@fjell/registry';
 import type { Widget } from '../../model/Widget';
 import type { WidgetType } from '../../model/WidgetType';
-import { widgetApi, widgetTypeApi } from './WidgetAPI';
+import { widgetApi, widgetTypeApi } from '../api/WidgetAPI';
 
 // Create Cache Registry
 export const cacheRegistry = createRegistry();
@@ -22,7 +22,7 @@ const createCacheOptions = (dbName: string, storeName: string) => ({
   ttl: 900000, // 15 minutes
   evictionPolicy: 'lru' as const,
   evictionConfig: {
-    type: 'lru'
+    type: 'lru' as const
   }
 });
 

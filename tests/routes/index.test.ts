@@ -212,7 +212,7 @@ describe('API Routes', () => {
 
       const recentActivity = response.body.data.recentActivity;
 
-      expect(recentActivity).toHaveLength(4); // All our test widgets
+      expect(recentActivity).toHaveLength(10); // Limited by dashboard endpoint slice(0, 10)
       expect(recentActivity[0]).toMatchObject({
         id: expect.any(String),
         name: expect.any(String),

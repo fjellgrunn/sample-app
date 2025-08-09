@@ -79,14 +79,6 @@ export const createWidgetLibrary = (
 
           return widget;
         },
-        postCreate: async (widget: Widget) => {
-          logger.info('Widget created successfully', {
-            id: widget.id,
-            name: widget.name,
-            widgetTypeId: widget.widgetTypeId
-          });
-          return widget;
-        },
       },
       finders: {
         // Find only active widgets

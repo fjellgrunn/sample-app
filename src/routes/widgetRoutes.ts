@@ -58,21 +58,13 @@ export const createWidgetRouter = (
 
   // Complex test endpoints (MUST be BEFORE PItemRouter to take precedence)
 
-  // POST endpoint for complex test behaviors
+  // POST endpoint - wrap all responses in success/data format
   router.post('/', async (req: Request, res: Response, next) => {
     // Debug logging
     logger.info('POST /widgets - checking headers', { headers: req.headers });
 
-    // Only handle complex test requests
-    if (!req.headers['x-custom-header']) {
-      logger.info('POST /widgets - delegating to PItemRouter (no custom header)');
-      return next(); // Delegate to PItemRouter
-    }
-
-    logger.info('POST /widgets - handling complex test request');
-
     try {
-      // Handle empty request body for complex tests
+      // Handle empty request body
       if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({
           success: false,
@@ -88,23 +80,35 @@ export const createWidgetRouter = (
         data: widget
       });
     } catch (error: any) {
-      logger.error('Error in POST /widgets (complex)', { error: error.message });
+      logger.error('Error in POST /widgets', { error: error.message });
 
-      // Handle validation errors for complex tests
-      res.status(400).json({
-        success: false,
-        error: 'Create Validation Failed'
-      });
+      // Handle validation errors
+      if (error.name === 'CreateValidationError' ||
+        error.name === 'ValidationError' ||
+        error.name === 'SequelizeValidationError' ||
+        error.message?.includes('validation') ||
+        error.message?.includes('Validation failed') ||
+        error.message?.includes('required') ||
+        error.message?.includes('must be') ||
+        error.message?.includes('cannot be') ||
+        error.message?.includes('notNull Violation') ||
+        error.message?.includes('cannot be null') ||
+        error.message?.includes('Required field')) {
+        res.status(400).json({
+          success: false,
+          error: error.message || 'Validation failed'
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Internal server error'
+        });
+      }
     }
   });
 
-  // PUT endpoint for complex test behaviors
+  // PUT endpoint - wrap all responses in success/data format
   router.put('/:id', async (req: Request, res: Response, next) => {
-    // Only handle complex test requests
-    if (!req.headers['x-custom-header']) {
-      return next(); // Delegate to PItemRouter
-    }
-
     try {
       const libOperations = widgetLibrary.operations;
       const ik = { kt: 'widget' as const, pk: req.params.id };
@@ -115,23 +119,25 @@ export const createWidgetRouter = (
         data: updatedWidget
       });
     } catch (error: any) {
-      logger.error('Error in PUT /widgets/:id (complex)', { error: error.message });
+      logger.error('Error in PUT /widgets/:id', { error: error.message });
 
-      // Convert any error to 404 for complex tests
-      res.status(404).json({
-        success: false,
-        error: 'Widget not found'
-      });
+      // Check if it's a not found error
+      if (error.name === 'NotFoundError' || error.name === 'UpdateError' || error.message?.includes('not found') || error.message?.includes('Update Failed')) {
+        res.status(404).json({
+          success: false,
+          error: error.message || 'Widget not found'
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Internal server error'
+        });
+      }
     }
   });
 
-  // DELETE endpoint for complex test behaviors
+  // DELETE endpoint - wrap all responses in success/message format
   router.delete('/:id', async (req: Request, res: Response, next) => {
-    // Only handle complex test requests
-    if (!req.headers['x-custom-header']) {
-      return next(); // Delegate to PItemRouter
-    }
-
     try {
       const libOperations = widgetLibrary.operations;
       const ik = { kt: 'widget' as const, pk: req.params.id };
@@ -142,26 +148,28 @@ export const createWidgetRouter = (
         message: 'Widget deleted successfully'
       });
     } catch (error: any) {
-      logger.error('Error in DELETE /widgets/:id (complex)', { error: error.message });
+      logger.error('Error in DELETE /widgets/:id', { error: error.message });
 
-      // Convert any error to 404 for complex tests
-      res.status(404).json({
-        success: false,
-        error: 'Widget not found'
-      });
+      // Check if it's a not found error
+      if (error.name === 'NotFoundError' || error.name === 'RemoveError' || error.message?.includes('not found')) {
+        res.status(404).json({
+          success: false,
+          error: error.message || 'Widget not found'
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Internal server error'
+        });
+      }
     }
   });
 
-  // GET /widgets - override for special cases, delegate to PItemRouter otherwise
+  // GET /widgets - handle all cases (simple GET and special finder cases) - MUST BE FIRST
   router.get('/', async (req: Request, res: Response, next) => {
     const query = req.query as any;
     const finder = query['finder'] as string;
     const needsWrappedResponse = req.query.active || req.query.limit || req.headers['x-custom-header'];
-
-    // Only handle special cases, let PItemRouter handle simple GET requests
-    if (!finder && !needsWrappedResponse) {
-      return next(); // Delegate to PItemRouter
-    }
 
     try {
       const libOperations = widgetLibrary.operations;
@@ -175,7 +183,7 @@ export const createWidgetRouter = (
         widgets = await libOperations.all({});
       }
 
-      // Return success format for special requests
+      // Return success format for special requests, otherwise return widgets array directly
       if (needsWrappedResponse) {
         res.json({ success: true, data: widgets });
       } else {
@@ -187,11 +195,32 @@ export const createWidgetRouter = (
     }
   });
 
-  // Create the PItemRouter for standard CRUD operations
-  const itemRouter = new PItemRouter(widgetLibrary, 'widget');
+  // GET /widgets/:id - handle individual widget retrieval with proper error format
+  router.get('/:id', async (req: Request, res: Response, next) => {
+    try {
+      const libOperations = widgetLibrary.operations;
+      const ik = { kt: 'widget' as const, pk: req.params.id };
+      const widget = await libOperations.get(ik);
+      res.json(widget);
+    } catch (error: any) {
+      logger.error('Error in GET /widgets/:id', { error: error.message });
 
-  // Mount the PItemRouter on this router
-  router.use('/', itemRouter.getRouter());
+      // Check if it's a not found error
+      if (error.name === 'NotFoundError' || error.message?.includes('not found')) {
+        res.status(404).json({
+          message: error.message || 'Widget not found'
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          error: 'Internal server error'
+        });
+      }
+    }
+  });
+
+  // Note: We're handling all routes manually to ensure proper response formatting
+  // instead of using PItemRouter which has different response format expectations
 
   logger.info('Widget router created successfully');
   return router;

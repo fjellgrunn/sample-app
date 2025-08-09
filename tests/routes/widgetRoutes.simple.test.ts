@@ -179,12 +179,15 @@ describe('Widget Routes (Simplified)', () => {
         .expect(201);
 
       expect(response.body).toMatchObject({
-        id: expect.any(String),
-        name: 'New Widget',
-        description: 'A newly created widget',
-        widgetTypeId: testWidgetType.id,
-        isActive: true,
-        data: { test: 'value' }
+        success: true,
+        data: {
+          id: expect.any(String),
+          name: 'New Widget',
+          description: 'A newly created widget',
+          widgetTypeId: testWidgetType.id,
+          isActive: true,
+          data: { test: 'value' }
+        }
       });
     });
 
@@ -221,10 +224,13 @@ describe('Widget Routes (Simplified)', () => {
         .expect(200);
 
       expect(response.body).toMatchObject({
-        id: widget.id,
-        name: 'Updated Widget',
-        description: 'Updated description',
-        isActive: false
+        success: true,
+        data: {
+          id: widget.id,
+          name: 'Updated Widget',
+          description: 'Updated description',
+          isActive: false
+        }
       });
     });
 
@@ -234,10 +240,10 @@ describe('Widget Routes (Simplified)', () => {
       const response = await request(app)
         .put('/widgets/non-existent-id')
         .send(updateData)
-        .expect(500); // PItemRouter returns 500 for update failures
+        .expect(404); // Route returns 404 for not found widgets
 
       expect(response.body).toMatchObject({
-        message: expect.any(String)
+        error: expect.any(String)
       });
     });
   });
@@ -254,20 +260,20 @@ describe('Widget Routes (Simplified)', () => {
         .delete(`/widgets/${widget.id}`)
         .expect(200);
 
-      // PItemRouter returns the deleted item
+      // Route returns success message
       expect(response.body).toMatchObject({
-        id: widget.id,
-        name: 'Widget to Delete'
+        success: true,
+        message: 'Widget deleted successfully'
       });
     });
 
     it('should return 404 for non-existent widget', async () => {
       const response = await request(app)
         .delete('/widgets/non-existent-id')
-        .expect(500); // PItemRouter returns 500 for delete failures
+        .expect(404); // Route returns 404 for not found widgets
 
       expect(response.body).toMatchObject({
-        message: expect.any(String)
+        error: expect.any(String)
       });
     });
   });
