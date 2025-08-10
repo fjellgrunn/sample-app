@@ -1,11 +1,9 @@
-import { Cache, createCache, createRegistry, IndexDBCacheMap } from '@fjell/cache';
+import { Cache, createCache } from '@fjell/cache';
 import { createCoordinate } from '@fjell/registry';
 import type { Widget } from '../../model/Widget';
-import type { WidgetType } from '../../model/WidgetType';
-import { widgetApi, widgetTypeApi } from '../api/WidgetAPI';
-
-// Create Cache Registry
-export const cacheRegistry = createRegistry();
+import { widgetApi } from '../api/WidgetAPI';
+import { cacheRegistry } from './registry';
+// Removed circular dependency import
 
 // Cache configuration optimized for browser environment with IndexedDB
 const createCacheOptions = (dbName: string, storeName: string) => ({
@@ -15,7 +13,7 @@ const createCacheOptions = (dbName: string, storeName: string) => ({
     version: 1,
     storeName
   },
-  enableDebugLogging: process.env.NODE_ENV === 'development',
+  enableDebugLogging: true, // Enable debug logging
   autoSync: true,
   maxRetries: 5,
   retryDelay: 2000,
@@ -34,81 +32,39 @@ export const widgetCache: Cache<Widget, 'widget'> = createCache(
   createCacheOptions('WidgetAppCache_Widgets', 'widgets')
 );
 
-// WidgetType Cache Instance
-export const widgetTypeCache: Cache<WidgetType, 'widgetType'> = createCache(
-  widgetTypeApi,
-  createCoordinate('widgetType'),
-  cacheRegistry,
-  createCacheOptions('WidgetAppCache_WidgetTypes', 'widgetTypes')
-);
-
-// Cache event subscriptions for cross-cache invalidation
-widgetCache.subscribe((event) => {
-  // When widgets change, we might need to invalidate widget type caches if they track widget counts
-  if (event.type === 'item_created' || event.type === 'item_updated' || event.type === 'item_removed') {
-    console.log(`Widget ${event.type} detected:`, event.item?.id);
-  }
-});
-
-widgetTypeCache.subscribe((event) => {
-  // When widget types change, we might need to invalidate related widget caches
-  if (event.type === 'item_created' || event.type === 'item_updated' || event.type === 'item_removed') {
-    console.log(`WidgetType ${event.type} detected:`, event.item?.id);
-
-    // Invalidate widget caches when widget types change
-    if (event.type === 'item_removed' && event.item?.id) {
-      // Clear any cached widgets of this type
-      widgetCache.cacheMap.clearQueryResults();
-    }
-  }
-});
-
-// Utility functions for cache management
-export const cacheUtils = {
+// Utility functions for widget cache management
+export const widgetCacheUtils = {
   /**
-   * Clear all widget-related caches
+   * Clear widget cache
    */
-  clearAll: async () => {
+  clear: async () => {
     await widgetCache.operations.reset();
-    await widgetTypeCache.operations.reset();
   },
 
   /**
-   * Get cache information for debugging
+   * Get widget cache information for debugging
    */
-  getCacheInfo: () => ({
-    widget: widgetCache.getCacheInfo(),
-    widgetType: widgetTypeCache.getCacheInfo()
-  }),
+  getCacheInfo: () => widgetCache.getCacheInfo(),
 
   /**
    * Manually invalidate widget caches when external changes occur
    */
-  invalidateWidgets: () => {
+  invalidate: () => {
     widgetCache.cacheMap.clearQueryResults();
   },
 
   /**
-   * Manually invalidate widget type caches when external changes occur
-   */
-  invalidateWidgetTypes: () => {
-    widgetTypeCache.cacheMap.clearQueryResults();
-  },
-
-  /**
-   * Get cache statistics for monitoring
+   * Get widget cache statistics for monitoring
    */
   getCacheStats: () => {
-    const widgetSizeInfo = widgetCache.cacheMap.getCurrentSize();
-    const widgetTypeSizeInfo = widgetTypeCache.cacheMap.getCurrentSize();
-
+    const sizeInfo = widgetCache.cacheMap.getCurrentSize();
     return {
-      widget: {
-        ...widgetSizeInfo
-      },
-      widgetType: {
-        ...widgetTypeSizeInfo
-      }
+      ...sizeInfo
     };
   }
 };
+
+// Export the cache registry for test access
+export { cacheRegistry };
+
+// Cross-cache utilities moved to index.ts to avoid circular dependencies

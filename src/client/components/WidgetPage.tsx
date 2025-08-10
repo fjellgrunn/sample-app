@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useWidgets } from '../providers/WidgetProvider';
+import { useWidgetTypes } from '../providers/WidgetTypeProvider';
 import { widgetApi } from '../api/WidgetAPI';
 import type { Widget } from '../../model/Widget';
 
 export const WidgetPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { widgets } = useWidgets();
+  const { items: widgets } = useWidgets();
+  const { items: widgetTypes } = useWidgetTypes();
   const [widget, setWidget] = useState<Widget | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -56,6 +58,12 @@ export const WidgetPage: React.FC = () => {
 
   const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleDateString();
+  };
+
+  const getWidgetTypeName = () => {
+    if (!widget) return '';
+    const widgetType = widgetTypes.find(wt => wt.id === widget.widgetTypeId);
+    return widgetType ? `${widgetType.name} (${widgetType.code})` : widget.widgetTypeId;
   };
 
   const handleBack = () => {
@@ -142,8 +150,8 @@ export const WidgetPage: React.FC = () => {
                 <span className="value">{widget.id}</span>
               </div>
               <div className="detail-row">
-                <span className="label">Widget Type ID:</span>
-                <span className="value">{widget.widgetTypeId}</span>
+                <span className="label">Widget Type:</span>
+                <span className="value">{getWidgetTypeName()}</span>
               </div>
               <div className="detail-row">
                 <span className="label">Status:</span>

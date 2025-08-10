@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Widget } from '../../model/Widget';
+import { useWidgetTypes } from '../providers/WidgetTypeProvider';
 
 interface WidgetCardProps {
   widget: Widget;
@@ -14,6 +15,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
   onDelete
 }) => {
   const navigate = useNavigate();
+  const { items: widgetTypes } = useWidgetTypes();
 
   const formatData = (data: any) => {
     if (!data) return 'No data';
@@ -22,6 +24,11 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
 
   const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleDateString();
+  };
+
+  const getWidgetTypeName = () => {
+    const widgetType = widgetTypes.find(wt => wt.id === widget.widgetTypeId);
+    return widgetType ? `${widgetType.name} (${widgetType.code})` : widget.widgetTypeId;
   };
 
   const handleCardClick = () => {
@@ -49,16 +56,16 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
           <span className="value">{widget.id}</span>
         </div>
         <div className="detail-row">
-          <span className="label">Type ID:</span>
-          <span className="value">{widget.widgetTypeId}</span>
+          <span className="label">Type:</span>
+          <span className="value">{getWidgetTypeName()}</span>
         </div>
         <div className="detail-row">
           <span className="label">Created:</span>
-          <span className="value">{formatDate(widget.createdAt)}</span>
+          <span className="value">{formatDate(widget.createdAt ?? new Date())}</span>
         </div>
         <div className="detail-row">
           <span className="label">Updated:</span>
-          <span className="value">{formatDate(widget.updatedAt)}</span>
+          <span className="value">{formatDate(widget.updatedAt ?? new Date())}</span>
         </div>
       </div>
 

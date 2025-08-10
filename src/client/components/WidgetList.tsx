@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useWidgetActions, useWidgets } from '../providers/WidgetProvider';
+import { useWidgets } from '../providers/WidgetProvider';
 import { WidgetCard } from './WidgetCard';
-import { widgetApi } from '../lib/WidgetAPI';
 import type { Widget } from '../../model/Widget';
-import type { WidgetSummary } from '../lib/WidgetAPI';
+import type { WidgetSummary } from '../api/WidgetAPI';
 
 export const WidgetList: React.FC = () => {
-  const { widgets, loading, error, refresh } = useWidgets();
-  const { deleteWidget } = useWidgetActions();
+  const { items: widgets, isLoading: loading, remove: deleteWidget } = useWidgets();
   const [summary, setSummary] = useState<WidgetSummary | null>(null);
   const [showInactive, setShowInactive] = useState(false);
 
@@ -38,7 +36,7 @@ export const WidgetList: React.FC = () => {
   const handleDelete = async (widget: Widget) => {
     if (window.confirm(`Are you sure you want to delete "${widget.name}"?`)) {
       try {
-        await deleteWidget(widget.id);
+        await deleteWidget(widget.key);
       } catch (error) {
         console.error('Failed to delete widget:', error);
         alert('Failed to delete widget. Please try again.');
@@ -58,27 +56,17 @@ export const WidgetList: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="widget-list-container">
-        <div className="error">
-          Error loading widgets: {error}
-          <button className="btn btn-primary" onClick={refresh}>
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="widget-list-container">
       <div className="widget-list-header">
         <h2>Widgets</h2>
+        <small style={{ color: '#666', marginLeft: '10px' }}>
+          (Using IndexedDB Cache)
+        </small>
         <div className="widget-controls">
           <button
             className="btn btn-secondary"
-            onClick={refresh}
+            onClick={() => { }}
           >
             Refresh
           </button>

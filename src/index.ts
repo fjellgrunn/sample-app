@@ -1,3 +1,4 @@
+import 'source-map-support/register.js';
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { getLogger } from '@fjell/logging';
 import { Database } from './database';
@@ -274,17 +275,17 @@ class SampleApp {
             }
           });
 
-          console.log(`\n🌟 Fjell Sample Application is running!`);
-          console.log(`📍 Server: http://localhost:${this.port}`);
-          console.log(`🔍 API: http://localhost:${this.port}/api`);
-          console.log(`❤️  Health: http://localhost:${this.port}/api/health`);
-          console.log(`📊 Dashboard: http://localhost:${this.port}/api/dashboard`);
-          console.log(`\n💡 Try these commands:`);
+          console.log(`\nFjell Sample Application is running!`);
+          console.log(`Server: http://localhost:${this.port}`);
+          console.log(`API: http://localhost:${this.port}/api`);
+          console.log(`Health: http://localhost:${this.port}/api/health`);
+          console.log(`Dashboard: http://localhost:${this.port}/api/dashboard`);
+          console.log(`\nTry these commands:`);
           console.log(`   curl http://localhost:${this.port}/api/health`);
           console.log(`   curl http://localhost:${this.port}/api/status`);
           console.log(`   curl http://localhost:${this.port}/api/widget-types`);
           console.log(`   curl http://localhost:${this.port}/api/widgets`);
-          console.log(`\n🛑 Press Ctrl+C to stop\n`);
+          console.log(`\nPress Ctrl+C to stop\n`);
 
           resolve();
         });
