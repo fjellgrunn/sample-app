@@ -50,16 +50,25 @@ describe('WidgetPage', () => {
   });
 
   const defaultWidgetContext = {
-    widgets: [mockWidget],
-    widgetTypes: [],
-    loading: false,
-    error: null,
-    refresh: vi.fn(),
-    deleteWidget: vi.fn(),
-    createWidget: vi.fn(),
-    updateWidget: vi.fn(),
-    getWidgetsByType: vi.fn(),
-    getCacheStats: vi.fn()
+    name: 'WidgetsContext',
+    items: [mockWidget],
+    isLoading: false,
+    isCreating: false,
+    isUpdating: false,
+    isRemoving: false,
+    pkTypes: ['widget'],
+    create: vi.fn(),
+    all: vi.fn(),
+    one: vi.fn(),
+    allAction: vi.fn(),
+    allFacet: vi.fn(),
+    facet: vi.fn(),
+    set: vi.fn(),
+    find: vi.fn(),
+    findOne: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+    action: vi.fn()
   };
 
   beforeEach(() => {
@@ -85,7 +94,7 @@ describe('WidgetPage', () => {
       mockUseParams.mockReturnValue({ id: 'widget-1' });
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: [] // No cached widgets
+        items: [] // No cached widgets
       });
       mockWidgetApiGet.mockResolvedValue(mockWidget);
 
@@ -111,7 +120,7 @@ describe('WidgetPage', () => {
       mockUseParams.mockReturnValue({ id: 'non-existent' });
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: []
+        items: []
       });
       mockWidgetApiGet.mockResolvedValue(null);
 
@@ -126,7 +135,7 @@ describe('WidgetPage', () => {
       mockUseParams.mockReturnValue({ id: 'error-widget' });
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: []
+        items: []
       });
       mockWidgetApiGet.mockRejectedValue(new Error('Network error'));
 
@@ -141,7 +150,7 @@ describe('WidgetPage', () => {
       mockUseParams.mockReturnValue({ id: 'error-widget' });
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: []
+        items: []
       });
       mockWidgetApiGet.mockRejectedValue('String error');
 
@@ -175,7 +184,7 @@ describe('WidgetPage', () => {
     it('should fetch widget from API when not in cache', async () => {
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: [] // Empty cache
+        items: [] // Empty cache
       });
       mockWidgetApiGet.mockResolvedValue(mockWidget);
 
@@ -224,7 +233,7 @@ describe('WidgetPage', () => {
       const inactiveWidget = { ...mockWidget, isActive: false };
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: [inactiveWidget]
+        items: [inactiveWidget]
       });
 
       renderWidgetPage();
@@ -249,7 +258,7 @@ describe('WidgetPage', () => {
 
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: [minimalWidget]
+        items: [minimalWidget]
       });
       mockUseParams.mockReturnValue({ id: 'minimal-widget' });
 
@@ -268,7 +277,7 @@ describe('WidgetPage', () => {
       const widgetWithNullData = { ...mockWidget, data: null };
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: [widgetWithNullData]
+        items: [widgetWithNullData]
       });
 
       renderWidgetPage();
@@ -297,7 +306,7 @@ describe('WidgetPage', () => {
       // Test loading state
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: []
+        items: []
       });
       mockWidgetApiGet.mockImplementation(() => new Promise(() => { })); // Never resolves
 
@@ -345,7 +354,7 @@ describe('WidgetPage', () => {
       const inactiveWidget = { ...mockWidget, isActive: false };
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: [inactiveWidget]
+        items: [inactiveWidget]
       });
 
       renderWidgetPage();
@@ -422,7 +431,7 @@ describe('WidgetPage', () => {
 
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: [complexWidget]
+        items: [complexWidget]
       });
 
       renderWidgetPage();
@@ -438,7 +447,7 @@ describe('WidgetPage', () => {
       const widgetWithNoData = { ...mockWidget, data: undefined };
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: [widgetWithNoData]
+        items: [widgetWithNoData]
       });
 
       renderWidgetPage();
@@ -461,7 +470,7 @@ describe('WidgetPage', () => {
       mockUseParams.mockReturnValue({ id: 'widget-2' });
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: [] // Empty cache for new widget
+        items: [] // Empty cache for new widget
       });
 
       const newWidget = TestFixtures.createCompleteWidget('widget-type-2', {
@@ -489,7 +498,7 @@ describe('WidgetPage', () => {
       const updatedWidget = { ...mockWidget, name: 'Updated Widget Name' };
       mockUseWidgets.mockReturnValue({
         ...defaultWidgetContext,
-        widgets: [updatedWidget]
+        items: [updatedWidget]
       });
 
       rerender(

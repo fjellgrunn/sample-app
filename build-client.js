@@ -26,7 +26,12 @@ async function buildClient() {
       },
       external: [], // Bundle everything for the browser
       alias: {
-        util: 'util'
+        util: 'util',
+        // Ensure only one copy of React is bundled
+        'react': join(__dirname, 'node_modules/react'),
+        'react-dom': join(__dirname, 'node_modules/react-dom'),
+        'react/jsx-runtime': join(__dirname, 'node_modules/react/jsx-runtime'),
+        'react/jsx-dev-runtime': join(__dirname, 'node_modules/react/jsx-dev-runtime')
       },
       loader: {
         '.tsx': 'tsx',

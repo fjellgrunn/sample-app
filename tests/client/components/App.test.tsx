@@ -16,6 +16,16 @@ vi.mock('../../../src/client/components/WidgetPage', () => ({
 vi.mock('../../../src/client/providers/WidgetProvider', () => ({
   WidgetContextProvider: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="widget-provider">{children}</div>
+  ),
+  WidgetAdapter: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="widget-adapter">{children}</div>
+  )
+}));
+
+// Mock the WidgetTypeProvider to avoid cache/API dependencies
+vi.mock('../../../src/client/providers/WidgetTypeProvider', () => ({
+  WidgetTypeAdapter: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="widget-type-adapter">{children}</div>
   )
 }));
 
@@ -89,10 +99,11 @@ describe('App Component', () => {
     expect(footer).toBeInTheDocument();
   });
 
-  it('wraps content with WidgetContextProvider', () => {
+  it('wraps content with RootAdapters (WidgetAdapter and WidgetTypeAdapter)', () => {
     renderApp();
 
-    expect(screen.getByTestId('widget-provider')).toBeInTheDocument();
+    expect(screen.getByTestId('widget-adapter')).toBeInTheDocument();
+    expect(screen.getByTestId('widget-type-adapter')).toBeInTheDocument();
   });
 
   it('includes BrowserRouter for routing', () => {
