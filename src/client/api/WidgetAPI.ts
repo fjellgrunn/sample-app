@@ -12,7 +12,7 @@ export interface WidgetSummary {
 }
 
 // Create HttpApi configuration for browser environment
-const createApiParams = (baseUrl: string = 'http://localhost:3000/api'): ApiParams => ({
+const createApiParams = (baseUrl: string = 'http://localhost:3001/api'): ApiParams => ({
   config: {
     url: baseUrl,
     requestCredentials: 'same-origin',

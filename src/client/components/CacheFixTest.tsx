@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useWidgetAdapter } from '../providers/WidgetProvider';
-import { widgetCache } from '../cache';
+import { getWidgetCache, getWidgetCacheSync, isBrowser } from '../cache/ClientCache';
 
 /**
  * This component tests a fix for the cache synchronization issue
@@ -13,42 +13,38 @@ export const CacheFixTest: React.FC = () => {
     console.log('🔧 CacheFixTest: Testing cache sync fix...');
 
     // Run once after a delay to let initial loading complete
-    const timeout = setTimeout(() => {
+    const timeout = setTimeout(async () => {
       console.log('🔧 CacheFixTest: Checking for sync issues...');
 
+      // Add null check to prevent infinite loop
+      if (!adapter || !adapter.name) {
+        console.log('🔧 Adapter not ready yet, skipping sync check');
+        return;
+      }
+
       // Check if cache and adapter are out of sync
-      const cacheKeys = widgetCache.cacheMap.keys();
-      const adapterKeys = adapter.cacheMap.keys();
-
-      console.log('🔧 Cache keys:', cacheKeys.length);
-      console.log('🔧 Adapter keys:', adapterKeys.length);
-      console.log('🔧 Same reference?', widgetCache.cacheMap === adapter.cacheMap);
-
-      if (cacheKeys.length > 0 && adapterKeys.length === 0) {
-        console.log('🔧 *** SYNC ISSUE DETECTED ***');
-        console.log('🔧 Cache has data but adapter cacheMap is empty!');
-
-        // FORCE SYNC: Make adapter use the cache's cacheMap
-        try {
-          console.log('🔧 Attempting to force sync...');
-          console.log('🔧 Adapter object:', adapter);
-
-          // Try direct assignment (this is a hack but should work for testing)
-          (adapter as any).cacheMap = widgetCache.cacheMap;
-          console.log('🔧 Direct cacheMap assignment completed!');
-
-          // Force React re-render by incrementing cache version if possible
-          const adapterInternal = (adapter as any);
-          if (adapterInternal.setCacheVersion && typeof adapterInternal.setCacheVersion === 'function') {
-            adapterInternal.setCacheVersion((prev: number) => prev + 1);
-            console.log('🔧 Cache version incremented to trigger re-render');
-          }
-
-        } catch (error) {
-          console.error('🔧 Sync failed:', error);
+      try {
+        if (!isBrowser()) {
+          console.log('🔧 Not in browser environment, skipping cache check');
+          return;
         }
-      } else {
-        console.log('🔧 No sync issues detected');
+
+        const widgetCache = getWidgetCacheSync();
+        const cacheKeys = await widgetCache.cacheMap?.keys() || [];
+
+        console.log('🔧 Cache keys:', cacheKeys.length);
+        console.log('🔧 Adapter name:', adapter.name);
+        console.log('🔧 Adapter pkTypes:', adapter.pkTypes);
+
+        if (cacheKeys.length > 0) {
+          console.log('🔧 *** CACHE HAS DATA ***');
+          console.log('🔧 Cache has data, adapter should use cache instead of API');
+          console.log('🔧 Skipping adapter.all() test to avoid unnecessary API calls');
+        } else {
+          console.log('🔧 No data in cache yet');
+        }
+      } catch (error) {
+        console.error('🔧 Error checking sync status:', error);
       }
     }, 2000);
 

@@ -1,245 +1,247 @@
-# Fjell Sample Application
+# Fjell Sample App
 
-A comprehensive reference implementation demonstrating the fjell server-side stack with Express.js, featuring Widget and WidgetType models.
+A sample application demonstrating the Fjell Framework with Next.js frontend and Express API backend.
 
 ## Overview
 
-This sample application showcases the complete fjell ecosystem for server-side development:
+This application showcases how to integrate the Fjell Framework with a modern web architecture that separates frontend and backend concerns. It demonstrates:
 
-- **Express.js** web framework
-- **SQLite** database with **Sequelize** ORM
-- **Fjell Core** items and keys
-- **Fjell Lib** for business logic
-- **Fjell Lib-Sequelize** for database integration
-- **Fjell Express-Router** for REST API
-- **Fjell Logging** for structured logging
+- **Frontend**: Next.js 15 application with React 19 and App Router
+- **Backend**: Express.js API server with Fjell Framework integration
+- **Widget Management**: Create, read, update, and delete widgets
+- **Widget Types**: Categorize widgets by type
+- **Offline Support**: IndexedDB-based caching for offline functionality
+- **TypeScript**: Full type safety throughout the application
 
 ## Architecture
 
-### Models
+### Frontend (Port 3000)
+The frontend is a Next.js 15 application that provides the user interface and handles client-side logic. It communicates with the backend API to perform data operations.
 
-- **WidgetType** - Reference type with properties:
-  - `id` (UUID)
-  - `code` (unique string, uppercase)
-  - `name` (display name)
-  - `description` (optional)
-  - `isActive` (boolean)
+### Backend (Port 3001)
+The backend is an Express.js API server that handles business logic, database operations, and provides RESTful endpoints. It integrates with the Fjell Framework for caching, providers, and registry management.
 
-- **Widget** - Main entity with properties:
-  - `id` (UUID)
-  - `widgetTypeId` (reference to WidgetType)
-  - `name` (display name)
-  - `description` (optional)
-  - `isActive` (boolean)
-  - `data` (JSON configuration)
+### Why Separate Frontend and Backend?
 
-### Project Structure
+While Next.js is very capable and provides excellent API functionality through its built-in API routes, this sample application demonstrates a more realistic real-world architecture where:
+
+- **Separation of Concerns**: Frontend and backend teams can work independently
+- **Technology Flexibility**: Different technologies can be chosen for each layer
+- **Scalability**: Frontend and backend can be scaled independently
+- **Deployment Options**: Each layer can be deployed to different environments
+- **Team Structure**: Frontend and backend developers can work in parallel
+- **Testing**: Each layer can be tested independently
+
+This model is common in enterprise applications where you might have:
+- Multiple frontend applications consuming the same API
+- Different backend services for different domains
+- Microservices architecture
+- Separate deployment pipelines for frontend and backend
+
+## Features
+
+- **Next.js 15 App Router**: Modern file-based routing for the frontend
+- **Express.js API**: RESTful backend with Fjell Framework integration
+- **Fjell Framework Integration**: Full integration with Fjell providers and cache
+- **Responsive Design**: Mobile-first responsive UI
+- **Offline Capability**: Works offline with IndexedDB caching
+- **Error Boundaries**: Graceful error handling with React Error Boundaries
+
+## Tech Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Backend**: Express.js, Node.js, TypeScript
+- **Framework**: Fjell Framework (cache, providers, registry)
+- **Database**: SQLite with Sequelize ORM
+- **Styling**: CSS with responsive design
+- **Build Tools**: Next.js built-in build system, esbuild for backend
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 21+
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd fjell-sample-app
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Start the backend API server**:
+   ```bash
+   npm run api:dev
+   ```
+   The API will be available at `http://localhost:3001`
+
+4. **Start the frontend development server**:
+   ```bash
+   npm run dev
+   ```
+   The frontend will be available at `http://localhost:3000`
+
+5. **Open your browser** and navigate to `http://localhost:3000`
+
+### Available Scripts
+
+- `npm run dev` - Start frontend development server (port 3000)
+- `npm run api:dev` - Start backend API development server (port 3001)
+- `npm run build` - Build frontend for production
+- `npm run api:build` - Build backend for production
+- `npm run start` - Start production frontend server
+- `npm run api:start` - Start production backend server
+- `npm run lint` - Run ESLint on both frontend and backend
+- `npm run type-check` - Run TypeScript type checking
+- `npm run test` - Run tests with Vitest
+
+## Project Structure
 
 ```
-src/
-├── model/           # Fjell Item definitions
-│   ├── Widget.ts
-│   ├── WidgetType.ts
-│   └── index.ts
-├── database/        # Sequelize models and database setup
-│   ├── database.ts
-│   ├── models.ts
-│   ├── seed.ts
-│   └── index.ts
-├── lib/            # Fjell Library objects and registry
-│   ├── WidgetLib.ts
-│   ├── WidgetTypeLib.ts
-│   └── index.ts
-├── routes/         # Express routes using fjell-express-router
-│   ├── widgetRoutes.ts
-│   ├── widgetTypeRoutes.ts
-│   └── index.ts
-└── index.ts        # Main Express application
+fjell-sample-app/
+├── app/                    # Next.js App Router (Frontend)
+│   ├── layout.tsx         # Root layout with Fjell providers
+│   ├── page.tsx           # Home page
+│   ├── widget/[id]/       # Dynamic widget route
+│   └── globals.css        # Global styles
+├── src/
+│   ├── client/            # Client-side components
+│   │   ├── components/    # React components
+│   │   ├── pages/         # Page components
+│   │   ├── providers/     # Fjell providers
+│   │   └── cache/         # Cache configuration
+│   ├── database/          # Database models and setup
+│   ├── lib/               # Utility libraries
+│   └── model/             # Data models
+├── api/                   # Express.js API Backend
+│   ├── server.ts          # Express server setup
+│   ├── routes/            # API route definitions
+│   ├── middleware/        # Express middleware
+│   └── controllers/       # API controllers
+├── tests/                 # Test files
+└── package.json           # Dependencies and scripts
 ```
-
-## Quick Start
-
-### Install Dependencies
-
-```bash
-npm install
-```
-
-### Build the Application
-
-```bash
-npm run build
-```
-
-### Start the Application
-
-```bash
-npm run dev
-```
-
-The application will start on http://localhost:3000
-
-### Development Mode
-
-```bash
-npm run dev
-```
-
-This will build and start the application, automatically creating the SQLite database and seeding it with test data.
 
 ## API Endpoints
 
-### General
+The Express backend provides the following RESTful endpoints:
 
-- `GET /` - Application information and available endpoints
-- `GET /api/health` - Health check
-- `GET /api/status` - Status with database statistics
-- `GET /api/dashboard` - Dashboard with summary data
-- `GET /health/database` - Database-specific health check
+- `GET /api/widgets` - Retrieve all widgets
+- `POST /api/widgets` - Create a new widget
+- `GET /api/widgets/:id` - Retrieve a specific widget
+- `PUT /api/widgets/:id` - Update a specific widget
+- `DELETE /api/widgets/:id` - Delete a specific widget
+- `GET /api/widget-types` - Retrieve all widget types
 
-### Widget Types (`/api/widget-types`)
+## Data Flow
 
-- `GET /api/widget-types` - List all widget types
-- `GET /api/widget-types/:id` - Get specific widget type
-- `POST /api/widget-types` - Create new widget type
-- `PUT /api/widget-types/:id` - Update widget type
-- `DELETE /api/widget-types/:id` - Delete widget type
-- `GET /api/widget-types/active` - Get only active widget types
-- `GET /api/widget-types/by-code/:code` - Get widget type by code
-- `POST /api/widget-types/validate` - Validate data without creating
+1. **Frontend Request**: User interacts with Next.js UI
+2. **API Call**: Frontend makes HTTP request to Express backend
+3. **Backend Processing**: Express server processes request with Fjell Framework
+4. **Database Operation**: Sequelize ORM performs database operations
+5. **Response**: Backend returns data to frontend
+6. **UI Update**: Frontend updates UI with received data
+7. **Offline Support**: IndexedDB provides offline data persistence
 
-### Widgets (`/api/widgets`)
+## Development
 
-- `GET /api/widgets` - List all widgets
-- `GET /api/widgets/:id` - Get specific widget
-- `POST /api/widgets` - Create new widget
-- `PUT /api/widgets/:id` - Update widget
-- `DELETE /api/widgets/:id` - Delete widget
-- `GET /api/widgets/active` - Get only active widgets
-- `GET /api/widgets/by-type/:widgetTypeId` - Get widgets by type ID
-- `GET /api/widgets/by-type-code/:code` - Get widgets by type code
-- `GET /api/widgets/with-type-info` - Get widgets with type information
-- `POST /api/widgets/validate` - Validate data without creating
+### Running Both Servers
 
-## Example Usage
-
-### Create a Widget Type
+For development, you'll need to run both servers:
 
 ```bash
-curl -X POST http://localhost:3000/api/widget-types \
-  -H "Content-Type: application/json" \
-  -d '{
-    "code": "CUSTOM_BUTTON",
-    "name": "Custom Button Widget",
-    "description": "A customizable button component",
-    "isActive": true
-  }'
+# Terminal 1 - Backend API
+npm run api:dev
+
+# Terminal 2 - Frontend
+npm run dev
 ```
 
-### Create a Widget
+### Adding New API Endpoints
+
+1. Create a new route file in `api/routes/`
+2. Add the route to `api/server.ts`
+3. Create corresponding controller in `api/controllers/`
+4. Update frontend to use the new endpoint
+
+### Adding New Frontend Routes
+
+1. Create a new directory in `app/` for your route
+2. Add a `page.tsx` file for the route component
+3. Import and use Fjell providers as needed
+
+### Adding New Components
+
+1. Create component in `src/client/components/`
+2. Add `"use client"` directive if using hooks or browser APIs
+3. Import Fjell providers as needed
+
+## Testing
+
+The app includes comprehensive tests using Vitest and React Testing Library:
 
 ```bash
-curl -X POST http://localhost:3000/api/widgets \
-  -H "Content-Type: application/json" \
-  -d '{
-    "widgetTypeId": "widget-type-id-here",
-    "name": "My Custom Button",
-    "description": "A button for the homepage",
-    "isActive": true,
-    "data": {
-      "text": "Click Me",
-      "color": "blue",
-      "size": "large"
-    }
-  }'
+npm run test              # Run all tests
+npm run test:watch        # Run tests in watch mode
+npm run test -- --coverage # Run tests with coverage
 ```
 
-### Get Dashboard Data
+## Building for Production
 
 ```bash
-curl http://localhost:3000/api/dashboard
+# Build both frontend and backend
+npm run build             # Build frontend
+npm run api:build         # Build backend
+
+# Start production servers
+npm run start             # Start frontend production server
+npm run api:start         # Start backend production server
 ```
 
-## Features Demonstrated
+## Troubleshooting
 
-### Fjell Core Integration
+### Common Issues
 
-- **Items** with proper key structure (`PriKey<'widget'>`, `PriKey<'widgetType'>`)
-- **Events** for tracking creation, updates, and deletion
-- **References** between Widget and WidgetType
+1. **Port Conflicts**: Ensure ports 3000 and 3001 are available
+2. **API Connection**: Verify the backend is running on port 3001
+3. **IndexedDB Errors**: These are expected during server-side rendering and will resolve in the browser
+4. **TypeScript Errors**: Run `npm run type-check` to identify type issues
+5. **Build Errors**: Ensure all client components have `"use client"` directive
 
-### Fjell Lib Integration
+### Performance
 
-- **Registry** for managing library instances
-- **Operations** for CRUD functionality
-- **Validators** for data validation
-- **Hooks** for lifecycle events
-- **Mappers** for database/item transformation
+- The app uses Next.js automatic code splitting
+- Fjell cache provides efficient data access
+- IndexedDB enables offline functionality
+- Express backend can be optimized independently
 
-### Fjell Express-Router Integration
+## Contributing
 
-- **PItemRouter** for automatic REST endpoint generation
-- **Custom routes** for business-specific functionality
-- **Error handling** and response formatting
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
-### Fjell Logging Integration
+## License
 
-- **Structured logging** throughout the application
-- **Request/response logging** middleware
-- **Error logging** with context
+Apache-2.0
 
-### Database Integration
+## Support
 
-- **SQLite** for simple, file-based storage
-- **Sequelize** models with relationships
-- **Automatic database initialization**
-- **Test data seeding**
-- **Health checks**
+For issues related to:
+- **Fjell Framework**: Check the Fjell documentation
+- **Next.js**: Refer to Next.js documentation
+- **Express.js**: Refer to Express.js documentation
+- **This App**: Open an issue in this repository
 
-## Development Scripts
+---
 
-- `npm run build` - Build the application
-- `npm run dev` - Build and start the application
-- `npm start` - Start the built application
-- `npm run lint` - Run ESLint
-- `npm run clean` - Remove build artifacts
-- `npm test` - Run tests with coverage
-
-## Database
-
-The application uses SQLite with a file named `sample-app.db` in the project root. The database is automatically created and seeded with test data on first run.
-
-### Test Data
-
-The application comes with pre-seeded test data including:
-
-- 5 widget types (BUTTON, TEXT_INPUT, CHART, TABLE, LEGACY_WIDGET)
-- 9 widgets of various types with different configurations
-- Examples of active/inactive states
-- Sample JSON data configurations
-
-## Configuration
-
-### Environment Variables
-
-- `PORT` - Server port (default: 3000)
-- `NODE_ENV` - Environment (development/production)
-
-### Database Configuration
-
-The database path can be configured in `src/database/database.ts`. By default, it uses `sample-app.db` in the project root.
-
-## Architecture Benefits
-
-This reference implementation demonstrates how fjell provides:
-
-1. **Type Safety** - Full TypeScript integration with proper Item types
-2. **Consistency** - Standardized patterns across all models
-3. **Validation** - Built-in data validation with custom rules
-4. **Logging** - Comprehensive, structured logging
-5. **REST APIs** - Automatic REST endpoint generation
-6. **Relationships** - Proper handling of entity relationships
-7. **Events** - Built-in event tracking for all entities
-8. **Extensibility** - Easy to add new models and functionality
-
-This serves as a template for building production fjell applications with Express.js.
+Built with Fjell Framework, Next.js, and Express.js

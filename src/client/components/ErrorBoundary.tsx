@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { FallbackProps, ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
 import { getLogger } from '@fjell/logging';

@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
-import { widgetCache, widgetTypeCache } from '../cache';
+import { getWidgetCache, getWidgetTypeCache } from '../cache/ClientCache';
 
 interface CacheInitializerProps {
   children: React.ReactNode;
@@ -21,6 +23,11 @@ export const CacheInitializer: React.FC<CacheInitializerProps> = ({ children }) 
     const initializeCaches = async () => {
       try {
         console.log('🚀 Initializing IndexedDB caches...');
+
+        // Get cache instances (will initialize them)
+        const widgetCache = await getWidgetCache();
+        const widgetTypeCache = await getWidgetTypeCache();
+
         console.log('Widget cache:', widgetCache);
         console.log('Widget type cache:', widgetTypeCache);
 
@@ -69,22 +76,13 @@ export const CacheInitializer: React.FC<CacheInitializerProps> = ({ children }) 
           console.log('✅ No initialization promises needed');
         }
 
-        // Trigger initial data load to populate caches
-        console.log('📥 Loading initial data into caches...');
+        // Skip data loading in CacheInitializer - let the providers handle this
+        console.log('✅ Cache initialization complete - skipping data preloading');
+        console.log('📝 Providers will load data on-demand using cache-first operations');
 
-        console.log('📥 Loading widgets...');
-        const widgetResult = await Promise.race([
-          widgetCache.operations.all(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Widget load timeout')), 5000))
-        ]);
-        console.log('✅ Widget result:', widgetResult);
-
-        console.log('📥 Loading widget types...');
-        const widgetTypeResult = await Promise.race([
-          widgetTypeCache.operations.all(),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Widget type load timeout')), 5000))
-        ]);
-        console.log('✅ Widget type result:', widgetTypeResult);
+        // Set dummy results to avoid breaking the rest of the initialization
+        const widgetResult = [widgetCache, []];
+        const widgetTypeResult = [widgetTypeCache, []];
 
         // Extract the actual data from the [CacheMap, Items[]] tuple
         const widgets = Array.isArray(widgetResult) ? widgetResult[1] : [];
