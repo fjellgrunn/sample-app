@@ -1,5 +1,7 @@
+"use client";
+
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 import type { Widget } from '../../model/Widget';
 import { useWidgetTypes } from '../providers/WidgetTypeProvider';
 
@@ -14,7 +16,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
   onEdit,
   onDelete
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { items: widgetTypes } = useWidgetTypes();
 
   const formatData = (data: any) => {
@@ -32,7 +34,7 @@ export const WidgetCard: React.FC<WidgetCardProps> = ({
   };
 
   const handleCardClick = () => {
-    navigate(`/widget/${widget.id}`);
+    router.push(`/widget/${widget.id}`);
   };
 
   return (

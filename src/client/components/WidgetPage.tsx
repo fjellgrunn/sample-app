@@ -1,55 +1,21 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useWidgets } from '../providers/WidgetProvider';
+import { useRouter } from 'next/navigation';
+import { useWidget, useWidgets } from '../providers/WidgetProvider';
 import { useWidgetTypes } from '../providers/WidgetTypeProvider';
 import { widgetApi } from '../api/WidgetAPI';
 import type { Widget } from '../../model/Widget';
 
-export const WidgetPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const { items: widgets } = useWidgets();
+interface WidgetPageProps {
+  widgetId?: string;
+}
+
+export const WidgetPage: React.FC<WidgetPageProps> = ({ widgetId }) => {
+  const router = useRouter();
+  const { item: widget, isLoading: loading } = useWidget();
   const { items: widgetTypes } = useWidgetTypes();
-  const [widget, setWidget] = useState<Widget | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadWidget = async () => {
-      if (!id) {
-        setError('No widget ID provided');
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        // First try to find in cached widgets
-        const cachedWidget = widgets.find(w => w.id === id);
-        if (cachedWidget) {
-          setWidget(cachedWidget);
-          setLoading(false);
-          return;
-        }
-
-        // If not found in cache, fetch from API
-        const widget = await widgetApi.get({ kt: 'widget', pk: id });
-        if (widget) {
-          setWidget(widget);
-        } else {
-          setError('Widget not found');
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load widget');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadWidget();
-  }, [id, widgets]);
 
   const formatData = (data: any) => {
     if (!data) return 'No data';
@@ -67,7 +33,7 @@ export const WidgetPage: React.FC = () => {
   };
 
   const handleBack = () => {
-    navigate('/');
+    router.push('/');
   };
 
   if (loading) {

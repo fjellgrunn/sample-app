@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext } from "react";
 
 import {
@@ -10,7 +12,7 @@ import {
 } from "@fjell/providers";
 import { IQFactory, ItemQuery, PriKey } from "@fjell/core";
 import { WidgetType } from "../../model/WidgetType";
-import { widgetTypeCache } from "../cache";
+import { getWidgetTypeCacheSync } from "../cache/ClientCache";
 
 export const WidgetTypeAdapterContext =
   createContext<PItemAdapter.ContextType<WidgetType, "widgetType"> | undefined>(undefined);
@@ -23,13 +25,11 @@ export const useWidgetTypeAdapter = () => PItemAdapter.usePItemAdapter<
 export const WidgetTypeAdapter: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  // Get cache instance synchronously (CacheInitializer has already initialized it)
+  const widgetTypeCache = getWidgetTypeCacheSync();
+
   // Create a typed version of the Adapter component
-  const TypedAdapter = PItemAdapter.Adapter as React.FC<{
-    name: string;
-    cache: typeof widgetTypeCache;
-    context: typeof WidgetTypeAdapterContext;
-    children: React.ReactNode;
-  }>;
+  const TypedAdapter = PItemAdapter.Adapter as any;
 
   return (
     <TypedAdapter
@@ -125,5 +125,5 @@ export const WidgetTypesAll: React.FC<{
 }> = ({ children }: {
   children: React.ReactNode;
 }) => {
-  return <WidgetTypesQuery query={IQFactory.all().toQuery()}>{children}</WidgetTypesQuery>;
-};
+    return <WidgetTypesQuery query={IQFactory.all().toQuery()}>{children}</WidgetTypesQuery>;
+  };

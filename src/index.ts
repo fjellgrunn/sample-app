@@ -121,7 +121,7 @@ class SampleApp {
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Client-Name');
 
       if (req.method === 'OPTIONS') {
         res.sendStatus(200);
@@ -290,7 +290,7 @@ class SampleApp {
           resolve();
         });
 
-        server.on('error', (error) => {
+        server.on('error', (error: any) => {
           logger.error('Server failed to start', { error, port: this.port });
           reject(error);
         });
