@@ -380,7 +380,7 @@ describe('WidgetCache', () => {
     // Test the actual exported instances and configuration
     it('should test actual WidgetCache module exports', async () => {
       // Import the actual module to test its exports
-      const WidgetCacheModule = await import('../../../src/client/cache/WidgetCache');
+      const WidgetCacheModule = await import('../../../src/client/cache');
 
       expect(WidgetCacheModule.cacheRegistry).toBeDefined();
       expect(WidgetCacheModule.widgetCache).toBeDefined();
@@ -389,7 +389,7 @@ describe('WidgetCache', () => {
     });
 
     it('should verify actual cache configuration options', async () => {
-      const WidgetCacheModule = await import('../../../src/client/cache/WidgetCache');
+      const WidgetCacheModule = await import('../../../src/client/cache');
 
       // Test that actual caches have expected configuration
       const widgetInfo = WidgetCacheModule.widgetCache.getCacheInfo();
@@ -403,7 +403,7 @@ describe('WidgetCache', () => {
     });
 
     it('should test actual cache utilities functions', async () => {
-      const WidgetCacheModule = await import('../../../src/client/cache/WidgetCache');
+      const WidgetCacheModule = await import('../../../src/client/cache');
 
       // Test all utility functions exist and are callable
       expect(typeof WidgetCacheModule.cacheUtils.clearAll).toBe('function');

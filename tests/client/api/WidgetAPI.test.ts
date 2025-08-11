@@ -75,7 +75,7 @@ describe('WidgetAPI', () => {
     it('should create HttpApi with default configuration', () => {
       expect(mockGetHttpApi).toHaveBeenCalledWith({
         config: {
-          url: 'http://localhost:3000/api',
+          url: 'http://localhost:3001/api',
           requestCredentials: 'same-origin',
           clientName: 'fjell-sample-app-widget-client'
         },

@@ -5,10 +5,31 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 
-// Mock navigation from react-router-dom used by the component
-const mockNavigate = vi.fn();
-vi.mock('react-router-dom', () => ({
-  useNavigate: () => mockNavigate
+// Mock Next.js router
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn()
+  })
+}));
+
+// Mock WidgetTypeProvider
+const mockWidgetTypes = [
+  { id: 'type1', name: 'Basic Widget', code: 'BASIC' },
+  { id: 'type2', name: 'Advanced Widget', code: 'ADV' }
+];
+
+vi.mock('../../../src/client/providers/WidgetTypeProvider', () => ({
+  useWidgetTypes: () => ({
+    items: mockWidgetTypes,
+    loading: false,
+    error: null
+  })
 }));
 
 import { WidgetCard } from '../../../src/client/components/WidgetCard';
@@ -88,7 +109,7 @@ describe('WidgetCard', () => {
       card.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith('/widget/w2');
+    expect(mockPush).toHaveBeenCalledWith('/widget/w2');
   });
 
   it('Edit button calls onEdit and does not navigate', () => {
@@ -111,7 +132,7 @@ describe('WidgetCard', () => {
 
     expect(onEdit).toHaveBeenCalledTimes(1);
     expect(onEdit).toHaveBeenCalledWith(expect.objectContaining({ id: 'w3' }));
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
   });
 
   it('Delete button appears only for active widgets and calls onDelete', () => {
@@ -128,7 +149,7 @@ describe('WidgetCard', () => {
 
     expect(onDelete).toHaveBeenCalledTimes(1);
     expect(onDelete).toHaveBeenCalledWith(expect.objectContaining({ id: 'w4' }));
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
 
     // Inactive widget should not render Delete button
     const inactiveWidget = { id: 'w5', widgetTypeId: 't1', name: 'NoDelete', isActive: false } as any;
