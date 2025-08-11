@@ -4,11 +4,37 @@ import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import { MemoryRouter } from 'react-router-dom';
 
 import { WidgetList } from '../../../src/client/components/WidgetList';
 import { useWidgets } from '../../../src/client/providers/WidgetProvider';
 import { TestFixtures } from '../../helpers/testFixtures';
+
+// Mock Next.js router
+const mockPush = vi.fn();
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn()
+  })
+}));
+
+// Mock WidgetTypeProvider for WidgetCard
+const mockWidgetTypes = [
+  { id: 'type1', name: 'Basic Widget', code: 'BASIC' },
+  { id: 'type2', name: 'Advanced Widget', code: 'ADV' }
+];
+
+vi.mock('../../../src/client/providers/WidgetTypeProvider', () => ({
+  useWidgetTypes: () => ({
+    items: mockWidgetTypes,
+    loading: false,
+    error: null
+  })
+}));
 
 // Mock provider hooks
 vi.mock('../../../src/client/providers/WidgetProvider', () => ({
@@ -55,9 +81,7 @@ describe('WidgetList', () => {
 
   const renderList = () =>
     render(
-      <MemoryRouter>
-        <WidgetList />
-      </MemoryRouter>
+      <WidgetList />
     );
 
   beforeEach(() => {
