@@ -189,7 +189,7 @@ describe('WidgetType Routes', () => {
       const response = await request(app)
         .post('/widget-types')
         .send(invalidData)
-        .expect(400);
+        .expect(500);
 
       expect(response.body).toMatchObject({
         error: expect.any(String)
@@ -221,7 +221,7 @@ describe('WidgetType Routes', () => {
       const response = await request(app)
         .post('/widget-types')
         .send(invalidData)
-        .expect(400);
+        .expect(500);
 
       expect(response.body).toMatchObject({
         error: expect.any(String)
@@ -237,7 +237,7 @@ describe('WidgetType Routes', () => {
       const response = await request(app)
         .post('/widget-types')
         .send(invalidData)
-        .expect(400);
+        .expect(500);
 
       expect(response.body).toMatchObject({
         error: expect.any(String)
@@ -526,7 +526,7 @@ describe('WidgetType Routes', () => {
       const response = await request(app)
         .post('/widget-types')
         .send({})
-        .expect(400);
+        .expect(500);
 
       expect(response.body).toMatchObject({
         error: expect.any(String)

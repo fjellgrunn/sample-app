@@ -170,7 +170,8 @@ class SampleApp {
           status: '/api/status',
           dashboard: '/api/dashboard',
           widgets: '/widgets',
-          widgetTypes: '/widget-types'
+          widgetTypes: '/widget-types',
+          cache: '/cache'
         },
         documentation: {
           widgets: 'Manage widget instances with references to widget types',
@@ -183,7 +184,9 @@ class SampleApp {
             'Automatic CRUD operations',
             'Data validation and relationships',
             'React frontend with fjell-providers',
-            'IndexDB caching with fjell-cache'
+            'IndexDB caching with fjell-cache',
+            'Two Layer Cache architecture with query/facet layers',
+            'Cache poisoning prevention and smart TTL management'
           ]
         },
         timestamp: new Date().toISOString()
@@ -285,6 +288,8 @@ class SampleApp {
           console.log(`   curl http://localhost:${this.port}/api/status`);
           console.log(`   curl http://localhost:${this.port}/api/widget-types`);
           console.log(`   curl http://localhost:${this.port}/api/widgets`);
+          console.log(`   curl http://localhost:${this.port}/api/cache/info`);
+          console.log(`   open http://localhost:${this.port}/cache-demo`);
           console.log(`\nPress Ctrl+C to stop\n`);
 
           resolve();

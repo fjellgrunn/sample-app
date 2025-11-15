@@ -1,10 +1,10 @@
 import { Cache, createCache } from '@fjell/cache';
-import { createCoordinate } from '@fjell/registry';
+import { createCoordinate } from '@fjell/core';
 import type { WidgetType } from '../../model/WidgetType';
 import { widgetTypeApi } from '../api/WidgetAPI';
 import { cacheRegistry } from './registry';
 
-// Cache configuration optimized for browser environment with IndexedDB
+// Cache configuration optimized for browser environment with IndexedDB and Two Layer Caching
 const createCacheOptions = (dbName: string, storeName: string) => ({
   cacheType: 'indexedDB' as const,
   indexedDBConfig: {
@@ -17,9 +17,15 @@ const createCacheOptions = (dbName: string, storeName: string) => ({
   maxRetries: 5,
   retryDelay: 2000,
   ttl: 900000, // 15 minutes
-  evictionPolicy: 'lru' as const,
   evictionConfig: {
     type: 'lru' as const
+  },
+  // Enable Two Layer Caching for advanced query management and cache poisoning prevention
+  twoLayer: {
+    itemTTL: 900, // 15 minutes for items (in seconds)
+    queryTTL: 300, // 5 minutes for complete query results
+    facetTTL: 60,  // 1 minute for partial/filtered query results
+    debug: true    // Enable two-layer debug logging
   }
 });
 

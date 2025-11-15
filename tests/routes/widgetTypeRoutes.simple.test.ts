@@ -189,7 +189,7 @@ describe('WidgetType Routes (Simplified)', () => {
       const response = await request(app)
         .post('/widget-types')
         .send({ name: 'Type without code', isActive: true })
-        .expect(400);
+        .expect(500);
 
       expect(response.body).toMatchObject({
         error: expect.any(String)

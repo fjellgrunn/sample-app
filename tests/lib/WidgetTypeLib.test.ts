@@ -279,7 +279,7 @@ describe('WidgetTypeLib', () => {
     it('should not find removed widget type', async () => {
       await widgetTypeLib.operations.remove(widgetType.key);
 
-      await expect(widgetTypeLib.operations.get(widgetType.key)).rejects.toThrow('Item not found');
+      await expect(widgetTypeLib.operations.get(widgetType.key)).rejects.toThrow('widgetType not found');
     });
   });
 

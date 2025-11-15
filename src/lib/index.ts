@@ -1,5 +1,6 @@
 import { createRegistry } from '@fjell/registry';
 import { getLogger } from '@fjell/logging';
+import { TwoLayerFactory } from '@fjell/cache';
 import { Database } from '../database';
 import { createWidgetLibrary } from './WidgetLib';
 import { createWidgetTypeLibrary } from './WidgetTypeLib';
