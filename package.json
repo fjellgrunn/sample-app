@@ -28,7 +28,8 @@
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "clean": "rm -rf .next dist",
-    "precommit": "npm run clean && npm run lint && npm run build && npm run test"
+    "precommit": "npm run clean && npm run lint && npm run build && npm run test",
+    "prepublishOnly": "npm run clean && npm run lint && npm run build && npm run test"
   },
   "dependencies": {
     "@fjell/cache": "^4.7.43",
