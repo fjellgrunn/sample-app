@@ -127,7 +127,12 @@ export function CacheDemo() {
 
   const renderQueryResult = (key: string, result: QueryResult) => {
     const isComplete = result.meta.queryType === 'complete';
-    const cardStyle = isComplete ? 'border-blue-200 bg-blue-50' : 'border-green-200 bg-green-50';
+    const isCacheDemo = key === 'keysDemo' || key === 'clobberTest';
+    const cardStyle = isCacheDemo 
+      ? 'border-orange-200 bg-orange-50'
+      : isComplete 
+        ? 'border-blue-200 bg-blue-50' 
+        : 'border-green-200 bg-green-50';
     
     return (
       <div key={key} className={`border-2 ${cardStyle} rounded-lg p-4 mb-4`}>
@@ -137,9 +142,13 @@ export function CacheDemo() {
           </h4>
           <div className="flex gap-2">
             <span className={`px-2 py-1 rounded text-sm ${
-              isComplete ? 'bg-blue-200 text-blue-800' : 'bg-green-200 text-green-800'
+              isCacheDemo
+                ? 'bg-orange-200 text-orange-800'
+                : isComplete 
+                  ? 'bg-blue-200 text-blue-800' 
+                  : 'bg-green-200 text-green-800'
             }`}>
-              {result.meta.queryType}
+              {isCacheDemo ? 'cache-test' : result.meta.queryType}
             </span>
             <span className={`px-2 py-1 rounded text-sm ${
               result.cacheHit ? 'bg-green-200 text-green-800' : 'bg-orange-200 text-orange-800'
@@ -167,7 +176,9 @@ export function CacheDemo() {
             <div>
               {result.meta.filteredCount !== undefined
                 ? `${result.meta.filteredCount}/${result.meta.totalCount}`
-                : result.data.length
+                : Array.isArray(result.data) 
+                  ? result.data.length
+                  : 'Object'
               }
             </div>
           </div>
@@ -175,10 +186,14 @@ export function CacheDemo() {
         
         <div className="mt-3">
           <details className="cursor-pointer">
-            <summary className="font-medium text-sm">View Data ({result.data.length} items)</summary>
+            <summary className="font-medium text-sm">
+              View Data ({Array.isArray(result.data) ? result.data.length : 1} items)
+            </summary>
             <pre className="mt-2 text-xs bg-white p-2 rounded border overflow-auto max-h-32">
-              {JSON.stringify(result.data.slice(0, 3), null, 2)}
-              {result.data.length > 3 && '... and more'}
+              {Array.isArray(result.data) 
+                ? JSON.stringify(result.data.slice(0, 3), null, 2) + (result.data.length > 3 ? '\n... and more' : '')
+                : JSON.stringify(result.data, null, 2)
+              }
             </pre>
           </details>
         </div>
@@ -191,9 +206,10 @@ export function CacheDemo() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-4">Two Layer Cache Demonstration</h1>
         <p className="text-gray-600 mb-4">
-          This demo shows how the Two Layer Cache architecture works with different query types.
+          This demo shows how the Two Layer Cache architecture works with different query types AND prevents cache clobbering.
           <strong className="text-blue-600"> Complete queries</strong> use longer TTL (5 min) while
           <strong className="text-green-600"> selective queries</strong> use shorter TTL (1 min).
+          <strong className="text-orange-600"> Cache tests</strong> demonstrate that different queries create separate cache entries.
         </p>
         
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
@@ -203,10 +219,11 @@ export function CacheDemo() {
             <code className="bg-blue-100 px-2 py-1 rounded">npm run api:dev</code> or <code className="bg-blue-100 px-2 py-1 rounded">npm run dev:all</code>
           </div>
           <ol className="list-decimal list-inside text-sm space-y-1">
-            <li>Execute different query types below and note the cache layers</li>
+            <li>Execute different query types below and note the cache layers AND unique cache keys</li>
+            <li>Use <strong className="text-orange-600">Cache Tests</strong> to see how different queries create separate cache entries</li>
             <li>Run the same query again quickly - should show cache hit with faster timing</li>
-            <li>Wait for TTL to expire and run again - should show cache miss</li>
-            <li>Check browser console for Two Layer Cache debug logs</li>
+            <li>Try different widgets by type - each type gets its own cache key (no clobbering!)</li>
+            <li>Check browser console for Two Layer Cache debug logs showing different cache keys</li>
             <li>Use clear cache to reset and start over</li>
           </ol>
         </div>
@@ -216,7 +233,7 @@ export function CacheDemo() {
       <div className="bg-white border rounded-lg p-4 mb-6">
         <h2 className="text-xl font-semibold mb-4">Query Controls</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Complete Queries */}
           <div className="space-y-2">
             <h3 className="font-semibold text-blue-600">Complete Queries (5min TTL)</h3>
@@ -278,6 +295,34 @@ export function CacheDemo() {
                   {loading[`widgetsByType_${selectedWidgetType}`] ? 'Loading...' : 'Get by Type'}
                 </button>
               </div>
+            )}
+          </div>
+
+          {/* Cache Clobbering Prevention Tests */}
+          <div className="space-y-2">
+            <h3 className="font-semibold text-orange-600">Cache Clobbering Prevention</h3>
+            <button
+              onClick={() => executeQuery('/api/cache/keys-demo', 'keysDemo', 'Cache Keys Demo')}
+              disabled={loading.keysDemo}
+              className="w-full px-3 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50"
+            >
+              {loading.keysDemo ? 'Loading...' : 'View Cache Keys'}
+            </button>
+            {results.allWidgets?.data?.length > 0 && (
+              <button
+                onClick={() => {
+                  const firstWidget = results.allWidgets.data[0];
+                  executeQuery(
+                    `/api/cache/widgets/clobber-test/${firstWidget.id}`,
+                    'clobberTest',
+                    'Cache Clobber Test'
+                  );
+                }}
+                disabled={loading.clobberTest}
+                className="w-full px-3 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-50"
+              >
+                {loading.clobberTest ? 'Loading...' : 'Test Same Widget Different Queries'}
+              </button>
             )}
           </div>
 
