@@ -21,9 +21,20 @@ export default function RootLayout({
           <RootAdapters>
             <ReferenceLoaders>
               <div className="app">
-                <header className="app-header">
-                  <h1>Fjell Sample App</h1>
-                  <p>Widget Management System</p>
+                <header className="app-header py-6">
+                  <div className="max-w-7xl mx-auto px-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <div>
+                        <h1 className="text-2xl font-bold">Fjell Sample App</h1>
+                        <p className="text-gray-600 mt-1">Widget Management System</p>
+                      </div>
+                    </div>
+                    <nav className="flex space-x-12 justify-center pt-4 border-t border-gray-200">
+                      <a href="/" className="text-blue-600 hover:text-blue-800 font-medium px-6 py-3 rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg">Home</a>
+                      <a href="/cache-demo" className="text-blue-600 hover:text-blue-800 font-medium px-6 py-3 rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg">Cache Demo</a>
+                      <a href="/api" className="text-blue-600 hover:text-blue-800 font-medium px-6 py-3 rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg" target="_blank">API Info</a>
+                    </nav>
+                  </div>
                 </header>
 
                 <main className="app-main">

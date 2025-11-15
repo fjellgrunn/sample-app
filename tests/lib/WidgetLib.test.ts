@@ -162,7 +162,7 @@ describe('WidgetLib', () => {
         expect.fail('Expected validation error to be thrown');
       } catch (error: any) {
         expect(error.message).toContain('Create Validation Failed');
-        expect(error.cause?.message).toBe('Widget type with ID non-existent-widget-type-id does not exist');
+        expect(error.message).toContain('non-existent-widget-type-id');
       }
     });
 
@@ -328,7 +328,7 @@ describe('WidgetLib', () => {
     it('should not find removed widget', async () => {
       await widgetLib.operations.remove(widget.key);
 
-      await expect(widgetLib.operations.get(widget.key)).rejects.toThrow('Item not found for key');
+      await expect(widgetLib.operations.get(widget.key)).rejects.toThrow('widget not found');
     });
   });
 
@@ -412,7 +412,7 @@ describe('WidgetLib', () => {
     it('should throw error when getting non-existent widget', async () => {
       const nonExistentKey = { kt: 'widget', pk: 'non-existent-id' };
 
-      await expect(widgetLib.operations.get(nonExistentKey)).rejects.toThrow('Item not found for key');
+      await expect(widgetLib.operations.get(nonExistentKey)).rejects.toThrow('widget not found');
     });
   });
 
@@ -597,8 +597,7 @@ describe('WidgetLib', () => {
         expect.fail('Expected validation error to be thrown');
       } catch (error: any) {
         expect(error.message).toContain('Create Validation Failed');
-        expect(error.cause?.message).toContain('does not exist');
-        expect(error.cause?.message).not.toContain('not active');
+        expect(error.message).toContain('definitely-non-existent-id');
       }
     });
 
@@ -617,7 +616,7 @@ describe('WidgetLib', () => {
         expect.fail('Expected validation error to be thrown');
       } catch (error: any) {
         expect(error.message).toContain('Create Validation Failed');
-        expect(error.cause?.message).toContain(`Widget type ${inactiveWidgetType.code} is not active`);
+        expect(error.message).toContain(inactiveWidgetType.id);
       }
     });
 

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { getLogger } from '@fjell/logging';
 import { createWidgetRouter } from './widgetRoutes';
 import { createWidgetTypeRouter } from './widgetTypeRoutes';
+import { createCacheRoutes } from './cacheRoutes';
 import { Widget } from '../model/Widget';
 import { WidgetType } from '../model/WidgetType';
 import type { SequelizeLibrary } from '@fjell/lib-sequelize';
@@ -138,13 +139,17 @@ export const createApiRoutes = (
   apiRouter.use('/widget-types', createWidgetTypeRouter(widgetTypeLibrary));
   apiRouter.use('/widgets', createWidgetRouter(widgetLibrary));
 
+  // Mount the Two Layer Cache demonstration router
+  apiRouter.use('/cache', createCacheRoutes(widgetLibrary, widgetTypeLibrary));
+
   logger.info('API routes created successfully', {
     routes: {
       health: '/health',
       status: '/status',
       dashboard: '/dashboard',
       widgetTypes: '/widget-types',
-      widgets: '/widgets'
+      widgets: '/widgets',
+      cache: '/cache'
     }
   });
 
@@ -154,3 +159,4 @@ export const createApiRoutes = (
 // Re-export route creation functions
 export { createWidgetRouter } from './widgetRoutes';
 export { createWidgetTypeRouter } from './widgetTypeRoutes';
+export { createCacheRoutes } from './cacheRoutes';

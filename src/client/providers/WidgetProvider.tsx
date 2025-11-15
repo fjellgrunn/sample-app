@@ -126,5 +126,5 @@ export const WidgetsAll: React.FC<{
 }> = ({ children }: {
   children: React.ReactNode;
 }) => {
-    return <WidgetsQuery query={IQFactory.all().toQuery()}>{children}</WidgetsQuery>;
-  };
+  return <WidgetsQuery query={IQFactory.all().toQuery()}>{children}</WidgetsQuery>;
+};

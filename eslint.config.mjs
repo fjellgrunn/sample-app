@@ -1,4 +1,4 @@
-import fjellConfig from '@fjell/eslint-config';
+import fjellConfig from '@fjell/common-config';
 
 export default [
   ...fjellConfig,

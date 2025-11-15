@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Cache, createCache, createRegistry } from '@fjell/cache';
-import { createCoordinate } from '@fjell/registry';
+import { createCoordinate } from '@fjell/core';
 import type { Widget } from '../../../src/model/Widget';
 import type { WidgetType } from '../../../src/model/WidgetType';
 import { TestFixtures } from '../../helpers/testFixtures';
@@ -32,7 +32,6 @@ const createTestCacheOptions = () => ({
   maxRetries: 5,
   retryDelay: 2000,
   ttl: 900000, // 15 minutes
-  evictionPolicy: 'lru' as const,
   evictionConfig: {
     type: 'lru' as const
   }
@@ -607,7 +606,6 @@ describe('WidgetCache', () => {
       expect(testOptions.maxRetries).toBe(5);
       expect(testOptions.retryDelay).toBe(2000);
       expect(testOptions.ttl).toBe(900000);
-      expect(testOptions.evictionPolicy).toBe('lru');
       expect(testOptions.evictionConfig.type).toBe('lru');
     });
   });
