@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import express from 'express';
-import { TestDatabase } from '../helpers/TestDatabase';
-import { TestFixtures } from '../helpers/TestFixtures';
+import { TestDatabase } from '../helpers/testDatabase';
+import { TestFixtures } from '../helpers/testFixtures';
 import { createWidgetRouter } from '../../src/routes/widgetRoutes';
 
 describe('Widget Routes (Simplified)', () => {
