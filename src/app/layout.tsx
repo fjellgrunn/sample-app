@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { RootAdapters } from '@/client/providers/RootAdapters'
 import { FjellErrorBoundary } from '@/client/components/ErrorBoundary'
 import './globals.css'
@@ -30,8 +31,8 @@ export default function RootLayout({
                       </div>
                     </div>
                     <nav className="flex space-x-12 justify-center pt-4 border-t border-gray-200">
-                      <a href="/" className="text-blue-600 hover:text-blue-800 font-medium px-6 py-3 rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg">Home</a>
-                      <a href="/cache-demo" className="text-blue-600 hover:text-blue-800 font-medium px-6 py-3 rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg">Cache Demo</a>
+                      <Link href="/" className="text-blue-600 hover:text-blue-800 font-medium px-6 py-3 rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg">Home</Link>
+                      <Link href="/cache-demo" className="text-blue-600 hover:text-blue-800 font-medium px-6 py-3 rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg">Cache Demo</Link>
                       <a href="/api" className="text-blue-600 hover:text-blue-800 font-medium px-6 py-3 rounded-lg hover:bg-blue-50 transition-all duration-200 text-lg" target="_blank">API Info</a>
                     </nav>
                   </div>
