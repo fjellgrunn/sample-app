@@ -36,13 +36,17 @@ twoLayer: {
 **Endpoints Added:**
 
 #### Selective Queries (Uses Facet Cache - 1 minute TTL):
-- `GET /api/cache/widgets/active` - Active widgets only
-- `GET /api/cache/widgets/by-type/:widgetTypeId` - Widgets filtered by type
-- `GET /api/cache/widgets/recent` - Widgets created in last 7 days
+- `GET /api/cache/widgets/active` - Active widgets only (cache key: `query:widget:all:{"query":{"isActive":true}}`)
+- `GET /api/cache/widgets/by-type/:widgetTypeId` - Widgets filtered by type (cache key: `query:widget:all:{"query":{"widgetTypeId":"ID"}}`)
+- `GET /api/cache/widgets/recent` - Widgets created in last 7 days (cache key: `query:widget:all:{"query":{"createdAt":{"$gte":"DATE"}}}`)
+
+#### Cache Clobbering Prevention Demos:
+- `GET /api/cache/widgets/clobber-test/:widgetId` - Shows same widget retrieved through different cache keys
+- `GET /api/cache/keys-demo` - Displays all different cache keys being used
 
 #### Complete Queries (Uses Query Cache - 5 minutes TTL):
-- `GET /api/cache/widgets/all` - All widgets without filtering
-- `GET /api/cache/widget-types/all` - All widget types without filtering
+- `GET /api/cache/widgets/all` - All widgets without filtering (cache key: `query:widget:all:{"query":{}}`)
+- `GET /api/cache/widget-types/all` - All widget types without filtering (cache key: `query:widgetType:all:{"query":{}}`)
 
 #### Cache Exploration:
 - `GET /api/cache/info` - Cache configuration and statistics
@@ -118,6 +122,21 @@ Navigate to `http://localhost:3000/cache-demo` to see the Two Layer Cache demons
 2. **Repeated Request (within TTL)**: Will show "Cache Hit" and be faster
 3. **After TTL Expiration**: Will show "Cache Miss" again and refresh data
 4. **Different Query Types**: Each has its own cache entry with different TTL
+5. **Cache Clobbering Prevention**: Different queries create separate cache keys - no conflicts!
+
+### 5. Testing Cache Clobbering Prevention
+
+The demo now includes special tests to prove cache clobbering prevention:
+
+1. **View Cache Keys Demo**: Shows all active cache keys being used
+2. **Same Widget Different Queries**: Demonstrates the same widget can be retrieved through multiple cache paths
+3. **Unique Cache Keys**: Each query parameter combination creates a unique cache key
+
+**Example Cache Keys Generated:**
+- All widgets: `query:widget:all:{"query":{}}`
+- Active widgets: `query:widget:all:{"query":{"isActive":true}}`  
+- Widgets by type: `query:widget:all:{"query":{"widgetTypeId":"abc123"}}`
+- Recent widgets: `query:widget:all:{"query":{"createdAt":{"$gte":"2024-01-01T00:00:00.000Z"}}}`
 
 ### 5. Browser Console Debugging
 
@@ -136,10 +155,14 @@ You can also test the cache behavior directly via API calls to the Express serve
 curl http://localhost:3001/api/cache/widgets/all
 curl http://localhost:3001/api/cache/widget-types/all
 
-# Selective queries (1 min cache)
+# Selective queries (1 min cache) - Each gets unique cache key!
 curl http://localhost:3001/api/cache/widgets/active
 curl http://localhost:3001/api/cache/widgets/recent
 curl http://localhost:3001/api/cache/widgets/by-type/[widget-type-id]
+
+# Cache clobbering prevention demos
+curl http://localhost:3001/api/cache/keys-demo
+curl http://localhost:3001/api/cache/widgets/clobber-test/[widget-id]
 
 # Cache info
 curl http://localhost:3001/api/cache/info
