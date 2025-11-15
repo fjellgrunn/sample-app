@@ -128,10 +128,10 @@ export function CacheDemo() {
   const renderQueryResult = (key: string, result: QueryResult) => {
     const isComplete = result.meta.queryType === 'complete';
     const isCacheDemo = key === 'keysDemo' || key === 'clobberTest';
-    const cardStyle = isCacheDemo 
+    const cardStyle = isCacheDemo
       ? 'border-orange-200 bg-orange-50'
-      : isComplete 
-        ? 'border-blue-200 bg-blue-50' 
+      : isComplete
+        ? 'border-blue-200 bg-blue-50'
         : 'border-green-200 bg-green-50';
     
     return (
@@ -144,8 +144,8 @@ export function CacheDemo() {
             <span className={`px-2 py-1 rounded text-sm ${
               isCacheDemo
                 ? 'bg-orange-200 text-orange-800'
-                : isComplete 
-                  ? 'bg-blue-200 text-blue-800' 
+                : isComplete
+                  ? 'bg-blue-200 text-blue-800'
                   : 'bg-green-200 text-green-800'
             }`}>
               {isCacheDemo ? 'cache-test' : result.meta.queryType}
@@ -176,7 +176,7 @@ export function CacheDemo() {
             <div>
               {result.meta.filteredCount !== undefined
                 ? `${result.meta.filteredCount}/${result.meta.totalCount}`
-                : Array.isArray(result.data) 
+                : Array.isArray(result.data)
                   ? result.data.length
                   : 'Object'
               }
@@ -190,7 +190,7 @@ export function CacheDemo() {
               View Data ({Array.isArray(result.data) ? result.data.length : 1} items)
             </summary>
             <pre className="mt-2 text-xs bg-white p-2 rounded border overflow-auto max-h-32">
-              {Array.isArray(result.data) 
+              {Array.isArray(result.data)
                 ? JSON.stringify(result.data.slice(0, 3), null, 2) + (result.data.length > 3 ? '\n... and more' : '')
                 : JSON.stringify(result.data, null, 2)
               }
@@ -370,7 +370,7 @@ export function CacheDemo() {
       {/* Footer Info */}
       <div className="mt-8 text-sm text-gray-500 border-t pt-4">
         <p>
-          <strong>💡 Pro Tip:</strong> Open your browser's Developer Console to see detailed
+          <strong>💡 Pro Tip:</strong> Open your browser&apos;s Developer Console to see detailed
           Two Layer Cache debug logs including cache hits/misses, TTL expiration, and query invalidation events.
         </p>
       </div>

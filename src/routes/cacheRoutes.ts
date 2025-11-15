@@ -48,7 +48,7 @@ export const createCacheRoutes = (
         data: activeWidgets,
         meta: {
           queryType: 'selective',
-          cacheLayer: 'facet', 
+          cacheLayer: 'facet',
           ttl: '60 seconds',
           description: 'Active widgets only - Uses DIFFERENT cache key than all widgets',
           cacheKey: 'query:widget:all:{"query":{"isActive":true}}',
@@ -240,7 +240,7 @@ export const createCacheRoutes = (
   });
 
   // ========================================
-  // CACHE CLOBBERING PREVENTION DEMOS  
+  // CACHE CLOBBERING PREVENTION DEMOS
   // ========================================
 
   /**
@@ -257,7 +257,7 @@ export const createCacheRoutes = (
       const allWidgets = await widgetLibrary.operations.all({});
       const widgetFromAll = allWidgets.find(w => w.id === widgetId);
       
-      // 2. Get active widgets (filtered cache key) 
+      // 2. Get active widgets (filtered cache key)
       const activeWidgets = await widgetLibrary.operations.all({ isActive: true });
       const widgetFromActive = activeWidgets.find(w => w.id === widgetId);
       
@@ -274,7 +274,7 @@ export const createCacheRoutes = (
           widgetId,
           foundInQueries: {
             all: !!widgetFromAll,
-            active: !!widgetFromActive, 
+            active: !!widgetFromActive,
             byType: !!widgetFromType
           },
           widgetData: widgetFromAll || widgetFromActive || widgetFromType,
@@ -324,7 +324,7 @@ export const createCacheRoutes = (
           ttl: '5 minutes (complete query)'
         },
         activeQuery: {
-          endpoint: '/api/cache/widgets/active', 
+          endpoint: '/api/cache/widgets/active',
           cacheKey: 'query:widget:all:{"query":{"isActive":true}}',
           description: 'Gets only ACTIVE widgets - filtered result set',
           ttl: '1 minute (partial query)'
@@ -396,7 +396,7 @@ export const createCacheRoutes = (
         endpoints: {
           selective: [
             '/api/cache/widgets/active',
-            '/api/cache/widgets/by-type/:id', 
+            '/api/cache/widgets/by-type/:id',
             '/api/cache/widgets/recent'
           ],
           complete: [
@@ -512,13 +512,13 @@ export const createCacheRoutes = (
     }
   });
 
-      logger.info('Two Level Cache demonstration routes created successfully', {
-        selectiveQueries: 3,
-        completeQueries: 2,
-        cacheDemo: 2,
-        explorationEndpoints: 2,
-        cacheClobberingPrevention: 'ENABLED - Each query gets unique cache key'
-      });
+  logger.info('Two Level Cache demonstration routes created successfully', {
+    selectiveQueries: 3,
+    completeQueries: 2,
+    cacheDemo: 2,
+    explorationEndpoints: 2,
+    cacheClobberingPrevention: 'ENABLED - Each query gets unique cache key'
+  });
 
   return cacheRouter;
 };

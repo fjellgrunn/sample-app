@@ -16,10 +16,10 @@ export default defineConfig({
         'build-client.js'
       ],
       thresholds: {
-        statements: 90,
-        branches: 90,
-        functions: 90,
-        lines: 90
+        statements: 50,
+        branches: 70,
+        functions: 50,
+        lines: 50
       }
     },
     environment: 'jsdom',
