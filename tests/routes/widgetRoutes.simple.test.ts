@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import express from 'express';
-import { TestDatabase } from '../helpers/TestDatabase';
-import { TestFixtures } from '../helpers/TestFixtures';
+import { TestDatabase } from '../helpers/testDatabase';
+import { TestFixtures } from '../helpers/testFixtures';
 import { createWidgetRouter } from '../../src/routes/widgetRoutes';
 
 describe('Widget Routes (Simplified)', () => {
@@ -49,8 +49,8 @@ describe('Widget Routes (Simplified)', () => {
         .get('/widgets')
         .expect(200);
 
-      expect(response.body).toEqual(expect.any(Array));
-      const ourWidgets = response.body.filter((w: any) =>
+      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
+      const ourWidgets = response.body.data.filter((w: any) =>
         [widget1.id, widget2.id].includes(w.id)
       );
       expect(ourWidgets).toHaveLength(2);
@@ -61,7 +61,7 @@ describe('Widget Routes (Simplified)', () => {
         .get('/widgets')
         .expect(200);
 
-      expect(response.body).toEqual([]);
+      expect(response.body).toMatchObject({ success: true, data: [] });
     });
   });
 
@@ -85,9 +85,9 @@ describe('Widget Routes (Simplified)', () => {
         .get('/widgets?finder=active&finderParams={}')
         .expect(200);
 
-      expect(response.body).toEqual(expect.any(Array));
-      const foundActive = response.body.find((w: any) => w.id === activeWidget.id);
-      const foundInactive = response.body.find((w: any) => w.id === inactiveWidget.id);
+      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
+      const foundActive = response.body.data.find((w: any) => w.id === activeWidget.id);
+      const foundInactive = response.body.data.find((w: any) => w.id === inactiveWidget.id);
 
       expect(foundActive).toBeDefined();
       expect(foundInactive).toBeUndefined();
@@ -113,9 +113,9 @@ describe('Widget Routes (Simplified)', () => {
         .get(`/widgets?finder=byType&finderParams=${JSON.stringify({ widgetTypeId: testWidgetType.id })}`)
         .expect(200);
 
-      expect(response.body).toEqual(expect.any(Array));
-      const foundWidget1 = response.body.find((w: any) => w.id === widget1.id);
-      const foundWidget2 = response.body.find((w: any) => w.id === widget2.id);
+      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
+      const foundWidget1 = response.body.data.find((w: any) => w.id === widget1.id);
+      const foundWidget2 = response.body.data.find((w: any) => w.id === widget2.id);
 
       expect(foundWidget1).toBeDefined();
       expect(foundWidget2).toBeUndefined();
@@ -126,7 +126,7 @@ describe('Widget Routes (Simplified)', () => {
         .get('/widgets?finder=byType&finderParams=' + JSON.stringify({ widgetTypeId: 'non-existent-id' }))
         .expect(200);
 
-      expect(response.body).toEqual([]);
+      expect(response.body).toMatchObject({ success: true, data: [] });
     });
   });
 
@@ -144,11 +144,14 @@ describe('Widget Routes (Simplified)', () => {
         .expect(200);
 
       expect(response.body).toMatchObject({
-        id: widget.id,
-        name: 'Specific Widget',
-        description: 'A specific widget for testing',
-        widgetTypeId: testWidgetType.id,
-        isActive: true
+        success: true,
+        data: {
+          id: widget.id,
+          name: 'Specific Widget',
+          description: 'A specific widget for testing',
+          widgetTypeId: testWidgetType.id,
+          isActive: true
+        }
       });
     });
 
@@ -158,7 +161,8 @@ describe('Widget Routes (Simplified)', () => {
         .expect(404);
 
       expect(response.body).toMatchObject({
-        message: expect.any(String)
+        success: false,
+        error: expect.any(String)
       });
     });
   });
@@ -179,12 +183,15 @@ describe('Widget Routes (Simplified)', () => {
         .expect(201);
 
       expect(response.body).toMatchObject({
-        id: expect.any(String),
-        name: 'New Widget',
-        description: 'A newly created widget',
-        widgetTypeId: testWidgetType.id,
-        isActive: true,
-        data: { test: 'value' }
+        success: true,
+        data: {
+          id: expect.any(String),
+          name: 'New Widget',
+          description: 'A newly created widget',
+          widgetTypeId: testWidgetType.id,
+          isActive: true,
+          data: { test: 'value' }
+        }
       });
     });
 
@@ -221,10 +228,13 @@ describe('Widget Routes (Simplified)', () => {
         .expect(200);
 
       expect(response.body).toMatchObject({
-        id: widget.id,
-        name: 'Updated Widget',
-        description: 'Updated description',
-        isActive: false
+        success: true,
+        data: {
+          id: widget.id,
+          name: 'Updated Widget',
+          description: 'Updated description',
+          isActive: false
+        }
       });
     });
 
@@ -234,10 +244,10 @@ describe('Widget Routes (Simplified)', () => {
       const response = await request(app)
         .put('/widgets/non-existent-id')
         .send(updateData)
-        .expect(500); // PItemRouter returns 500 for update failures
+        .expect(404); // Route returns 404 for not found widgets
 
       expect(response.body).toMatchObject({
-        message: expect.any(String)
+        error: expect.any(String)
       });
     });
   });
@@ -254,20 +264,20 @@ describe('Widget Routes (Simplified)', () => {
         .delete(`/widgets/${widget.id}`)
         .expect(200);
 
-      // PItemRouter returns the deleted item
+      // Route returns success message
       expect(response.body).toMatchObject({
-        id: widget.id,
-        name: 'Widget to Delete'
+        success: true,
+        message: 'Widget deleted successfully'
       });
     });
 
     it('should return 404 for non-existent widget', async () => {
       const response = await request(app)
         .delete('/widgets/non-existent-id')
-        .expect(500); // PItemRouter returns 500 for delete failures
+        .expect(404); // Route returns 404 for not found widgets
 
       expect(response.body).toMatchObject({
-        message: expect.any(String)
+        error: expect.any(String)
       });
     });
   });

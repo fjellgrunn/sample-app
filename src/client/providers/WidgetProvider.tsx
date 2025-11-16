@@ -1,165 +1,130 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import type { Widget } from '../../model/Widget';
-import type { WidgetType } from '../../model/WidgetType';
-import { cacheUtils, widgetCache, widgetTypeCache } from '../lib/WidgetCache';
-import { PriKey } from '@fjell/core';
 
-interface WidgetContextType {
-  widgets: Widget[];
-  widgetTypes: WidgetType[];
-  loading: boolean;
-  error: string | null;
-  refresh: () => Promise<void>;
-  deleteWidget: (id: string) => Promise<void>;
-  createWidget: (widget: Partial<Widget>) => Promise<Widget>;
-  updateWidget: (id: string, updates: Partial<Widget>) => Promise<Widget>;
-  getWidgetsByType: (typeId: string) => Widget[];
-  getCacheStats: () => any;
-}
+"use client";
 
-const WidgetContext = createContext<WidgetContextType | undefined>(undefined);
+import React, { createContext } from "react";
 
-interface WidgetProviderProps {
-  children: ReactNode;
-}
+import {
+  PItem,
+  PItemAdapter,
+  PItemLoad,
+  PItemQuery,
+  PItems,
+  PItemsQuery,
+} from "@fjell/providers";
+import { IQFactory, ItemQuery, PriKey } from "@fjell/core";
+import { Widget } from "../../model/Widget";
+import { getWidgetCacheSync } from "../cache/ClientCache";
 
-export const WidgetContextProvider: React.FC<WidgetProviderProps> = ({ children }) => {
-  const [widgets, setWidgets] = useState<Widget[]>([]);
-  const [widgetTypes, setWidgetTypes] = useState<WidgetType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export const WidgetAdapterContext =
+  createContext<PItemAdapter.ContextType<Widget, "widget"> | undefined>(undefined);
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+export const useWidgetAdapter = () => PItemAdapter.usePItemAdapter<
+  Widget,
+  "widget"
+>(WidgetAdapterContext, 'WidgetAdapterContext');
 
-      // Load widgets and widget types through cache (which will fetch from API if not cached)
-      const [, widgetData] = await widgetCache.operations.all();
-      const [, widgetTypeData] = await widgetTypeCache.operations.all();
+export const WidgetAdapter: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  // Get cache instance synchronously (CacheInitializer has already initialized it)
+  const widgetCache = getWidgetCacheSync();
 
-      setWidgets(widgetData);
-      setWidgetTypes(widgetTypeData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-      console.error('Error loading widget data:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const deleteWidget = async (id: string) => {
-    try {
-      const widgetKey: PriKey<'widget'> = { kt: 'widget', pk: id };
-      await widgetCache.operations.remove(widgetKey);
-
-      // Update local state
-      setWidgets(prev => prev.filter(widget => widget.id !== id));
-    } catch (err) {
-      console.error('Error deleting widget:', err);
-      throw err;
-    }
-  };
-
-  const createWidget = async (widget: Partial<Widget>): Promise<Widget> => {
-    try {
-      const [, newWidget] = await widgetCache.operations.create(widget);
-
-      // Update local state
-      setWidgets(prev => [...prev, newWidget]);
-      return newWidget;
-    } catch (err) {
-      console.error('Error creating widget:', err);
-      throw err;
-    }
-  };
-
-  const updateWidget = async (id: string, updates: Partial<Widget>): Promise<Widget> => {
-    try {
-      const widgetKey: PriKey<'widget'> = { kt: 'widget', pk: id };
-      const [, updatedWidget] = await widgetCache.operations.update(widgetKey, updates);
-
-      // Update local state
-      setWidgets(prev => prev.map(w => w.id === id ? updatedWidget : w));
-      return updatedWidget;
-    } catch (err) {
-      console.error('Error updating widget:', err);
-      throw err;
-    }
-  };
-
-  const getWidgetsByType = (typeId: string): Widget[] => {
-    return widgets.filter(widget => widget.widgetTypeId === typeId);
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const value: WidgetContextType = {
-    widgets,
-    widgetTypes,
-    loading,
-    error,
-    refresh: loadData,
-    deleteWidget,
-    createWidget,
-    updateWidget,
-    getWidgetsByType,
-    getCacheStats: cacheUtils.getCacheStats
-  };
+  // Create a typed version of the Adapter component
+  const TypedAdapter = PItemAdapter.Adapter as any;
 
   return (
-    <WidgetContext.Provider value={value}>
+    <TypedAdapter
+      name='WidgetAdapter'
+      cache={widgetCache}
+      context={WidgetAdapterContext}
+    >
       {children}
-    </WidgetContext.Provider>
+    </TypedAdapter>
   );
-};
+}
 
-// Hook to use the widget context
-export const useWidgets = () => {
-  const context = useContext(WidgetContext);
-  if (!context) {
-    throw new Error('useWidgets must be used within a WidgetContextProvider');
+export const WidgetContext =
+  createContext<PItem.ContextType<Widget, 'widget'> | undefined>(undefined);
+
+export const useWidget = () =>
+  PItem.usePItem<Widget, 'widget'>(WidgetContext, 'WidgetContext');
+
+export const WidgetLoad: React.FC<{
+  ik: PriKey<'widget'>;
+  children: React.ReactNode;
+}> = (
+  { ik, children }: {
+    ik: PriKey<'widget'>;
+    children: React.ReactNode;
   }
-  return context;
-};
+) => PItemLoad<
+  Widget,
+  "widget"
+>({
+  name: 'WidgetLoad',
+  ik,
+  adapter: WidgetAdapterContext,
+  context: WidgetContext,
+  contextName: 'WidgetContext',
+  children,
+});
 
-// Hook for individual widget operations
-export const useWidget = (id: string) => {
-  const { widgets, updateWidget, deleteWidget } = useWidgets();
-  const widget = widgets.find(w => w.id === id);
+export type WidgetsContextType =
+  PItems.ContextType<Widget, 'widget'>;
 
-  return {
-    widget,
-    update: (updates: Partial<Widget>) => updateWidget(id, updates),
-    delete: () => deleteWidget(id)
-  };
-};
+export const WidgetsContext =
+  createContext<WidgetsContextType | undefined>(undefined);
 
-// Hook for widget type operations
-export const useWidgetTypes = () => {
-  const { widgetTypes, getWidgetsByType } = useWidgets();
+export const useWidgets = () =>
+  PItems.usePItems<Widget, 'widget'>(WidgetsContext, 'WidgetsContext') as WidgetsContextType;
 
-  return {
-    widgetTypes,
-    getWidgetsByType,
-    getWidgetType: (id: string) => widgetTypes.find(wt => wt.id === id)
-  };
-};
+export const WidgetQuery: React.FC<{
+  query: ItemQuery;
+  children: React.ReactNode;
+  optional?: boolean;
+}> = (
+  { query, children, optional }: {
+    query: ItemQuery;
+    children: React.ReactNode;
+    optional?: boolean;
+  }
+) => PItemQuery<
+  Widget,
+  "widget"
+>({
+  name: 'WidgetQuery',
+  query,
+  adapter: WidgetAdapterContext,
+  context: WidgetContext,
+  contextName: 'WidgetContext',
+  children,
+  optional,
+});
 
-// Hook for widget management actions
-export const useWidgetActions = () => {
-  const { createWidget, updateWidget, deleteWidget, refresh, getCacheStats } = useWidgets();
+export const WidgetsQuery: React.FC<{
+  query?: ItemQuery;
+  children: React.ReactNode;
+}> = (
+  { query, children }: {
+    query?: ItemQuery;
+    children: React.ReactNode;
+  }
+) => PItemsQuery<
+  Widget,
+  "widget"
+>({
+  name: 'WidgetsQuery',
+  query,
+  adapter: WidgetAdapterContext,
+  context: WidgetsContext,
+  contextName: 'WidgetsContext',
+  children,
+});
 
-  return {
-    createWidget,
-    updateWidget,
-    deleteWidget,
-    refresh,
-    getCacheStats,
-    clearCache: cacheUtils.clearAll,
-    invalidateWidgets: cacheUtils.invalidateWidgets,
-    invalidateWidgetTypes: cacheUtils.invalidateWidgetTypes
-  };
+export const WidgetsAll: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }: {
+  children: React.ReactNode;
+}) => {
+  return <WidgetsQuery query={IQFactory.all().toQuery()}>{children}</WidgetsQuery>;
 };
