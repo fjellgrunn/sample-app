@@ -79,14 +79,6 @@ export const createWidgetLibrary = (
 
           return widget;
         },
-        postCreate: async (widget: Widget) => {
-          logger.info('Widget created successfully', {
-            id: widget.id,
-            name: widget.name,
-            widgetTypeId: widget.widgetTypeId
-          });
-          return widget;
-        },
       },
       finders: {
         // Find only active widgets
@@ -131,27 +123,13 @@ export const createWidgetLibrary = (
           return results;
         },
 
-        // Get all widgets with their type information included
+        // Get all widgets (simplified version without join)
         withTypeInfo: async () => {
-          logger.info('Finding widgets with type information');
-
+          logger.info('Finding all widgets (simplified)');
           const results = await widgetModel.findAll({
-            include: [{
-              model: widgetTypeModel,
-              as: 'widgetType',
-              required: false
-            }],
             order: [['createdAt', 'DESC']]
           });
-
-          // Transform to include widgetTypeInfo property
-          return results.map(widget => {
-            const widgetData = widget.toJSON();
-            return {
-              ...widgetData,
-              widgetTypeInfo: widgetData.widgetType || null
-            };
-          });
+          return results;
         }
       },
     }
