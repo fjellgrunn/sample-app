@@ -35,7 +35,7 @@
   "dependencies": {
     "@fjell/cache": "^4.7.47",
     "@fjell/client-api": "^4.4.56",
-    "@fjell/core": "^4.4.62",
+    "@fjell/core": "^4.4.63",
     "@fjell/express-router": "^4.4.67",
     "@fjell/http-api": "^4.4.52",
     "@fjell/lib": "^4.4.70",
