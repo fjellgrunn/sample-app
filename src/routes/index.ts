@@ -39,9 +39,12 @@ export const createApiRoutes = (
       logger.info('Status check requested');
 
       // Get counts from the libraries
-      const widgetTypes = await widgetTypeLibrary.operations.all({});
-      const widgets = await widgetLibrary.operations.all({});
-      const widgetComponents = await widgetComponentLibrary.operations.all({});
+      const widgetTypesResult = await widgetTypeLibrary.operations.all({});
+      const widgetsResult = await widgetLibrary.operations.all({});
+      const widgetComponentsResult = await widgetComponentLibrary.operations.all({});
+      const widgetTypes = widgetTypesResult.items;
+      const widgets = widgetsResult.items;
+      const widgetComponents = widgetComponentsResult.items;
       const activeWidgetTypes = widgetTypes.filter(wt => wt.isActive);
       const activeWidgets = widgets.filter(w => w.isActive);
       const activeComponents = widgetComponents.filter(wc => wc.status === 'active');
@@ -84,8 +87,10 @@ export const createApiRoutes = (
     try {
       logger.info('Dashboard data requested');
 
-      const widgetTypes = await widgetTypeLibrary.operations.all({});
-      const widgets = await widgetLibrary.operations.all({});
+      const widgetTypesResult = await widgetTypeLibrary.operations.all({});
+      const widgetsResult = await widgetLibrary.operations.all({});
+      const widgetTypes = widgetTypesResult.items;
+      const widgets = widgetsResult.items;
 
       // Create widget type breakdown
       const widgetTypeBreakdown = widgetTypes.map(wt => {
