@@ -116,7 +116,8 @@ export const createWidgetRouter = (
   // Add summary endpoint - must be before /:id route from baseRouter
   router.get('/summary', async (req: Request, res: Response) => {
     try {
-      const widgets = await widgetLibrary.operations.all({});
+      const widgetsResult = await widgetLibrary.operations.all({});
+      const widgets = widgetsResult.items;
       const activeWidgets = widgets.filter(w => w.isActive);
       const inactiveWidgets = widgets.filter(w => !w.isActive);
 
