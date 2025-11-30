@@ -402,8 +402,8 @@ describe('WidgetLib', () => {
     it('should list all widgets', async () => {
       const allWidgets = await widgetLib.operations.all({});
 
-      expect(allWidgets.length).toBeGreaterThanOrEqual(3);
-      const ourWidgets = allWidgets.filter(w =>
+      expect(allWidgets.items.length).toBeGreaterThanOrEqual(3);
+      const ourWidgets = allWidgets.items.filter(w =>
         widgets.some(widget => widget.id === w.id)
       );
       expect(ourWidgets).toHaveLength(3);
@@ -463,22 +463,22 @@ describe('WidgetLib', () => {
       const results = await widgetLib.operations.find('active', {});
 
       expect(results).toBeDefined();
-      expect(Array.isArray(results)).toBe(true);
+      expect(Array.isArray(results.items)).toBe(true);
 
       // Should include our active widgets
-      const ourActiveWidgets = results.filter((w: any) =>
+      const ourActiveWidgets = results.items.filter((w: any) =>
         activeWidgets.some(aw => aw.id === w.id)
       );
       expect(ourActiveWidgets).toHaveLength(2);
 
       // Should not include our inactive widgets
-      const ourInactiveWidgets = results.filter((w: any) =>
+      const ourInactiveWidgets = results.items.filter((w: any) =>
         inactiveWidgets.some(iw => iw.id === w.id)
       );
       expect(ourInactiveWidgets).toHaveLength(0);
 
       // All results should be active
-      results.forEach((widget: any) => {
+      results.items.forEach((widget: any) => {
         expect(widget.isActive).toBe(true);
       });
     });
@@ -487,15 +487,15 @@ describe('WidgetLib', () => {
       const results = await widgetLib.operations.find('byType', { widgetTypeId: widgetType1.id });
 
       expect(results).toBeDefined();
-      expect(Array.isArray(results)).toBe(true);
+      expect(Array.isArray(results.items)).toBe(true);
 
       // Should only include widgets of the specified type
-      results.forEach((widget: any) => {
+      results.items.forEach((widget: any) => {
         expect(widget.widgetTypeId).toBe(widgetType1.id);
       });
 
       // Should include our widgets of this type (both active and inactive)
-      const ourWidgetsOfType1 = results.filter((w: any) =>
+      const ourWidgetsOfType1 = results.items.filter((w: any) =>
         activeWidgets.some(aw => aw.id === w.id)
       );
       expect(ourWidgetsOfType1).toHaveLength(2);
@@ -505,15 +505,15 @@ describe('WidgetLib', () => {
       const results = await widgetLib.operations.find('byTypeCode', { code: 'FINDER_TYPE_2' });
 
       expect(results).toBeDefined();
-      expect(Array.isArray(results)).toBe(true);
+      expect(Array.isArray(results.items)).toBe(true);
 
       // Should only include widgets of the specified type
-      results.forEach((widget: any) => {
+      results.items.forEach((widget: any) => {
         expect(widget.widgetTypeId).toBe(widgetType2.id);
       });
 
       // Should include our widgets of this type
-      const ourWidgetsOfType2 = results.filter((w: any) =>
+      const ourWidgetsOfType2 = results.items.filter((w: any) =>
         inactiveWidgets.some(iw => iw.id === w.id)
       );
       expect(ourWidgetsOfType2).toHaveLength(2);
@@ -523,10 +523,10 @@ describe('WidgetLib', () => {
       const results = await widgetLib.operations.find('byTypeCode', { code: 'finder_type_1' });
 
       expect(results).toBeDefined();
-      expect(Array.isArray(results)).toBe(true);
+      expect(Array.isArray(results.items)).toBe(true);
 
       // Should find widgets despite lowercase input
-      const ourWidgetsOfType1 = results.filter((w: any) =>
+      const ourWidgetsOfType1 = results.items.filter((w: any) =>
         activeWidgets.some(aw => aw.id === w.id)
       );
       expect(ourWidgetsOfType1).toHaveLength(2);
@@ -536,18 +536,18 @@ describe('WidgetLib', () => {
       const results = await widgetLib.operations.find('byTypeCode', { code: 'NON_EXISTENT_CODE' });
 
       expect(results).toBeDefined();
-      expect(Array.isArray(results)).toBe(true);
-      expect(results).toHaveLength(0);
+      expect(Array.isArray(results.items)).toBe(true);
+      expect(results.items).toHaveLength(0);
     });
 
     it('should find widgets with type information', async () => {
       const results = await widgetLib.operations.find('active', {});
 
       expect(results).toBeDefined();
-      expect(Array.isArray(results)).toBe(true);
+      expect(Array.isArray(results.items)).toBe(true);
 
       // Should include our widgets
-      const ourWidgets = results.filter((w: any) =>
+      const ourWidgets = results.items.filter((w: any) =>
         [...activeWidgets, ...inactiveWidgets].some(widget => widget.id === w.id)
       );
       expect(ourWidgets.length).toBeGreaterThanOrEqual(2);

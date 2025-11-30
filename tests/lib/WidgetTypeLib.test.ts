@@ -361,8 +361,8 @@ describe('WidgetTypeLib', () => {
     it('should list all widget types', async () => {
       const allWidgetTypes = await widgetTypeLib.operations.all({});
 
-      expect(allWidgetTypes.length).toBeGreaterThanOrEqual(3);
-      const ourWidgetTypes = allWidgetTypes.filter(wt =>
+      expect(allWidgetTypes.items.length).toBeGreaterThanOrEqual(3);
+      const ourWidgetTypes = allWidgetTypes.items.filter(wt =>
         widgetTypes.some(widgetType => widgetType.id === wt.id)
       );
       expect(ourWidgetTypes).toHaveLength(3);

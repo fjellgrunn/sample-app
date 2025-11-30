@@ -46,8 +46,14 @@ describe('WidgetType Routes (Simplified)', () => {
         .get('/widget-types')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
-      const ourTypes = response.body.data.filter((wt: any) =>
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
+      const ourTypes = response.body.data.items.filter((wt: any) =>
         [widgetType1.id, widgetType2.id].includes(wt.id)
       );
       expect(ourTypes).toHaveLength(2);
@@ -58,7 +64,13 @@ describe('WidgetType Routes (Simplified)', () => {
         .get('/widget-types')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: [] });
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: [],
+          metadata: expect.any(Object)
+        } 
+      });
     });
   });
 
@@ -84,9 +96,15 @@ describe('WidgetType Routes (Simplified)', () => {
         .get('/widget-types?finder=active&finderParams={}')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
-      const foundActive = response.body.data.find((wt: any) => wt.id === activeType.id);
-      const foundInactive = response.body.data.find((wt: any) => wt.id === inactiveType.id);
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
+      const foundActive = response.body.data.items.find((wt: any) => wt.id === activeType.id);
+      const foundInactive = response.body.data.items.find((wt: any) => wt.id === inactiveType.id);
 
       expect(foundActive).toBeDefined();
       expect(foundInactive).toBeUndefined();
@@ -104,9 +122,15 @@ describe('WidgetType Routes (Simplified)', () => {
         .get(`/widget-types?finder=byCode&finderParams=${JSON.stringify({ code: 'FIND_BY_CODE' })}`)
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
-      expect(response.body.data).toHaveLength(1);
-      expect(response.body.data[0]).toMatchObject({
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
+      expect(response.body.data.items).toHaveLength(1);
+      expect(response.body.data.items[0]).toMatchObject({
         id: widgetType.id,
         code: 'FIND_BY_CODE',
         name: 'Find By Code Type'
