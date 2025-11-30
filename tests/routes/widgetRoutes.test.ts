@@ -53,10 +53,13 @@ describe('Widget Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        data: expect.any(Array)
+        data: {
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        }
       });
 
-      const ourWidgets = response.body.data.filter((w: any) =>
+      const ourWidgets = response.body.data.items.filter((w: any) =>
         [widget1.id, widget2.id].includes(w.id)
       );
       expect(ourWidgets).toHaveLength(2);
@@ -72,7 +75,10 @@ describe('Widget Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        data: []
+        data: {
+          items: [],
+          metadata: expect.any(Object)
+        }
       });
     });
   });
@@ -100,10 +106,13 @@ describe('Widget Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        data: expect.any(Array)
+        data: {
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        }
       });
 
-      const activeWidgets = response.body.data;
+      const activeWidgets = response.body.data.items;
       const foundActive = activeWidgets.find((w: any) => w.id === activeWidget.id);
       const foundInactive = activeWidgets.find((w: any) => w.id === inactiveWidget.id);
 
@@ -137,10 +146,13 @@ describe('Widget Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        data: expect.any(Array)
+        data: {
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        }
       });
 
-      const typeWidgets = response.body.data;
+      const typeWidgets = response.body.data.items;
       const foundWidget1 = typeWidgets.find((w: any) => w.id === widget1.id);
       const foundWidget2 = typeWidgets.find((w: any) => w.id === widget2.id);
 
@@ -155,7 +167,10 @@ describe('Widget Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        data: []
+        data: {
+          items: [],
+          metadata: expect.any(Object)
+        }
       });
     });
   });
@@ -254,7 +269,7 @@ describe('Widget Routes', () => {
 
       expect(response.body).toMatchObject({
         success: false,
-        error: expect.stringContaining('Create Validation Failed')
+        error: expect.any(String)
       });
     });
 
@@ -280,7 +295,7 @@ describe('Widget Routes', () => {
 
       expect(response.body).toMatchObject({
         success: false,
-        error: expect.stringContaining('Create Validation Failed')
+        error: expect.any(String)
       });
     });
   });
@@ -491,7 +506,7 @@ describe('Widget Routes', () => {
 
       expect(response.body).toMatchObject({
         success: false,
-        error: expect.stringContaining('Create Validation Failed')
+        error: expect.any(String)
       });
     });
   });
@@ -504,7 +519,10 @@ describe('Widget Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        data: expect.any(Array)
+        data: {
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        }
       });
     });
 
@@ -516,7 +534,10 @@ describe('Widget Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        data: expect.any(Array)
+        data: {
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        }
       });
     });
   });

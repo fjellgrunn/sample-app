@@ -407,7 +407,7 @@ describe('WidgetComponentLib - Cache Consistency Certification', () => {
       });
 
       const all = await widgetComponentLib.operations.all({});
-      expect(all.length).toBeGreaterThanOrEqual(2);
+      expect(all.items.length).toBeGreaterThanOrEqual(2);
     });
   });
 });
