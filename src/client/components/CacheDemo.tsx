@@ -59,7 +59,8 @@ export function CacheDemo() {
 
   const loadWidgetTypes = async () => {
     try {
-      const widgetTypes = await widgetTypeAdapter.all(IQFactory.all().toQuery());
+      const result = await widgetTypeAdapter.all(IQFactory.all().toQuery());
+      const widgetTypes = result.items;
       setWidgetTypes(widgetTypes);
       if (widgetTypes.length > 0) {
         setSelectedWidgetType(widgetTypes[0].id);
@@ -101,7 +102,8 @@ export function CacheDemo() {
       
       if (cacheType === 'widget') {
         if (queryType === 'all') {
-          data = await widgetAdapter.all(IQFactory.all().toQuery());
+          const result = await widgetAdapter.all(IQFactory.all().toQuery());
+          data = result.items;
           cacheHit = Math.random() > 0.5; // Simulate cache behavior - real implementation would track this
         } else if (queryType === 'finder' && finderName) {
           // Use the adapter's finder method directly
@@ -110,7 +112,8 @@ export function CacheDemo() {
         }
       } else {
         if (queryType === 'all') {
-          data = await widgetTypeAdapter.all(IQFactory.all().toQuery());
+          const result = await widgetTypeAdapter.all(IQFactory.all().toQuery());
+          data = result.items;
           cacheHit = Math.random() > 0.5; // Simulate cache behavior
         } else if (queryType === 'finder' && finderName) {
           // Use the adapter's finder method directly

@@ -258,7 +258,13 @@ describe('API Routes', () => {
         .get('/api/widget-types')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
     });
 
     it('should mount widget routes', async () => {
@@ -266,7 +272,13 @@ describe('API Routes', () => {
         .get('/api/widgets')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
     });
 
     it('should handle 404 for unknown API routes', async () => {

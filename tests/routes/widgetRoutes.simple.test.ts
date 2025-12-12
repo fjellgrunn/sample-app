@@ -49,8 +49,14 @@ describe('Widget Routes (Simplified)', () => {
         .get('/widgets')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
-      const ourWidgets = response.body.data.filter((w: any) =>
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
+      const ourWidgets = response.body.data.items.filter((w: any) =>
         [widget1.id, widget2.id].includes(w.id)
       );
       expect(ourWidgets).toHaveLength(2);
@@ -61,7 +67,13 @@ describe('Widget Routes (Simplified)', () => {
         .get('/widgets')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: [] });
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: [],
+          metadata: expect.any(Object)
+        } 
+      });
     });
   });
 
@@ -85,9 +97,15 @@ describe('Widget Routes (Simplified)', () => {
         .get('/widgets?finder=active&finderParams={}')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
-      const foundActive = response.body.data.find((w: any) => w.id === activeWidget.id);
-      const foundInactive = response.body.data.find((w: any) => w.id === inactiveWidget.id);
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
+      const foundActive = response.body.data.items.find((w: any) => w.id === activeWidget.id);
+      const foundInactive = response.body.data.items.find((w: any) => w.id === inactiveWidget.id);
 
       expect(foundActive).toBeDefined();
       expect(foundInactive).toBeUndefined();
@@ -113,9 +131,15 @@ describe('Widget Routes (Simplified)', () => {
         .get(`/widgets?finder=byType&finderParams=${JSON.stringify({ widgetTypeId: testWidgetType.id })}`)
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
-      const foundWidget1 = response.body.data.find((w: any) => w.id === widget1.id);
-      const foundWidget2 = response.body.data.find((w: any) => w.id === widget2.id);
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
+      const foundWidget1 = response.body.data.items.find((w: any) => w.id === widget1.id);
+      const foundWidget2 = response.body.data.items.find((w: any) => w.id === widget2.id);
 
       expect(foundWidget1).toBeDefined();
       expect(foundWidget2).toBeUndefined();
@@ -126,7 +150,13 @@ describe('Widget Routes (Simplified)', () => {
         .get('/widgets?finder=byType&finderParams=' + JSON.stringify({ widgetTypeId: 'non-existent-id' }))
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: [] });
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: [],
+          metadata: expect.any(Object)
+        } 
+      });
     });
   });
 

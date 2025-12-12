@@ -46,9 +46,15 @@ describe('WidgetType Routes', () => {
         .get('/widget-types')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
 
-      const ourTypes = response.body.data.filter((wt: any) =>
+      const ourTypes = response.body.data.items.filter((wt: any) =>
         [widgetType1.id, widgetType2.id].includes(wt.id)
       );
       expect(ourTypes).toHaveLength(2);
@@ -69,7 +75,13 @@ describe('WidgetType Routes', () => {
         .get('/widget-types')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: [] });
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: [],
+          metadata: expect.any(Object)
+        } 
+      });
 
       // Clean up
       await freshTestDb.cleanup();
@@ -99,9 +111,15 @@ describe('WidgetType Routes', () => {
         .get('/widget-types?finder=active&finderParams={}')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
 
-      const activeTypes = response.body.data;
+      const activeTypes = response.body.data.items;
       const foundActive = activeTypes.find((wt: any) => wt.id === activeType.id);
       const foundInactive = activeTypes.find((wt: any) => wt.id === inactiveType.id);
 
@@ -567,7 +585,13 @@ describe('WidgetType Routes', () => {
         .get('/widget-types?active=true&limit=10')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
     });
 
     it('should handle requests with custom headers', async () => {
@@ -576,7 +600,13 @@ describe('WidgetType Routes', () => {
         .set('X-Custom-Header', 'test-value')
         .expect(200);
 
-      expect(response.body).toMatchObject({ success: true, data: expect.any(Array) });
+      expect(response.body).toMatchObject({ 
+        success: true, 
+        data: { 
+          items: expect.any(Array),
+          metadata: expect.any(Object)
+        } 
+      });
     });
   });
 
