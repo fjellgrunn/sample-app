@@ -46,3 +46,5 @@ input/
 processed/
 .kodrdriv-link-backup.json
 .next
+
+.kodrdriv*
