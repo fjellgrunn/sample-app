@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
-import { SampleApp } from '../src/index';
+import { isDirectExecution, SampleApp } from '../src/index';
+import { pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
 import { TestDatabase } from './helpers/testDatabase';
 
 describe('SampleApp', () => {
@@ -34,6 +36,23 @@ describe('SampleApp', () => {
       expect(customApp).toBeInstanceOf(SampleApp);
       expect(customApp.getApp()).toBeDefined();
       expect(customApp.getDatabase()).toBeDefined();
+    });
+  });
+
+  describe('isDirectExecution', () => {
+    it('should return true for equivalent relative/absolute argv paths', () => {
+      const absolutePath = resolve('dist/index.js');
+      const importMetaUrl = pathToFileURL(absolutePath).href;
+
+      expect(isDirectExecution(importMetaUrl, 'dist/index.js')).toBe(true);
+      expect(isDirectExecution(importMetaUrl, absolutePath)).toBe(true);
+    });
+
+    it('should return false when argv path is missing or different', () => {
+      const importMetaUrl = pathToFileURL(resolve('dist/index.js')).href;
+
+      expect(isDirectExecution(importMetaUrl, undefined)).toBe(false);
+      expect(isDirectExecution(importMetaUrl, 'dist/other.js')).toBe(false);
     });
   });
 

@@ -1,5 +1,7 @@
 import 'source-map-support/register.js';
 import express, { Application, NextFunction, Request, Response } from 'express';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
 import { getLogger } from '@fjell/logging';
 import { Database } from './database';
 import { initializeLibraryRegistry } from './lib';
@@ -379,8 +381,18 @@ async function main() {
   }
 }
 
+export function isDirectExecution(importMetaUrl: string, argvPath?: string): boolean {
+  if (!argvPath) {
+    return false;
+  }
+
+  const argvUrl = pathToFileURL(resolve(argvPath)).href;
+  const normalizedImportMetaUrl = pathToFileURL(fileURLToPath(importMetaUrl)).href;
+  return argvUrl === normalizedImportMetaUrl;
+}
+
 // Start the application if this file is run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isDirectExecution(import.meta.url, process.argv[1])) {
   main().catch((error) => {
     console.error('Application startup failed:', error);
     process.exit(1);
