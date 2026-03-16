@@ -41,7 +41,7 @@
     "@fjell/lib": "^4.4.89",
     "@fjell/lib-sequelize": "^4.4.85",
     "@fjell/logging": "^4.4.72",
-    "@fjell/providers": "^4.5.90",
+    "@fjell/providers": "^4.5.91",
     "@types/express": "^5.0.0",
     "@types/supertest": "^6.0.3",
     "express": "^5.1.0",
