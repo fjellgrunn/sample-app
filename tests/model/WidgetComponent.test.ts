@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import type { WidgetComponent, WidgetComponentProperties } from '../../src/model/WidgetComponent';
 import type { ComKey } from '@fjell/core';
-
 describe('WidgetComponent Model', () => {
   describe('Interface Validation', () => {
     it('should define correct interface structure', () => {
@@ -21,27 +20,19 @@ describe('WidgetComponent Model', () => {
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
         events: {
-          created: {
-            at: new Date('2024-01-01'),
-            by: 'system'
-          },
-          updated: {
-            at: new Date('2024-01-01'),
-            by: 'system'
-          }
+          created: { at: new Date('2024-01-01') },
+          updated: { at: new Date('2024-01-01') },
+          deleted: { at: null }
         }
       };
-
       expect(widgetComponent.id).toBe('component-1');
       expect(widgetComponent.widgetId).toBe('widget-1');
       expect(widgetComponent.componentTypeId).toBe('TYPE-A');
       expect(widgetComponent.status).toBe('pending');
       expect(widgetComponent.priority).toBe(50);
     });
-
     it('should support all valid status values', () => {
       const statuses: Array<'pending' | 'active' | 'complete'> = ['pending', 'active', 'complete'];
-      
       statuses.forEach(status => {
         const component: WidgetComponent = {
           key: {
@@ -58,18 +49,16 @@ describe('WidgetComponent Model', () => {
           createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-01T00:00:00Z',
           events: {
-            created: { at: new Date(), by: 'system' },
-            updated: { at: new Date(), by: 'system' }
+            created: { at: new Date() },
+            updated: { at: new Date() },
+            deleted: { at: null }
           }
         };
-
         expect(component.status).toBe(status);
       });
     });
-
     it('should validate priority range', () => {
       const priorities = [0, 25, 50, 75, 100];
-      
       priorities.forEach(priority => {
         const component: WidgetComponent = {
           key: {
@@ -86,18 +75,17 @@ describe('WidgetComponent Model', () => {
           createdAt: '2024-01-01T00:00:00Z',
           updatedAt: '2024-01-01T00:00:00Z',
           events: {
-            created: { at: new Date(), by: 'system' },
-            updated: { at: new Date(), by: 'system' }
+            created: { at: new Date() },
+            updated: { at: new Date() },
+            deleted: { at: null }
           }
         };
-
         expect(component.priority).toBe(priority);
         expect(component.priority).toBeGreaterThanOrEqual(0);
         expect(component.priority).toBeLessThanOrEqual(100);
       });
     });
   });
-
   describe('WidgetComponentProperties', () => {
     it('should define correct properties interface', () => {
       const properties: WidgetComponentProperties = {
@@ -108,7 +96,6 @@ describe('WidgetComponent Model', () => {
         priority: 75,
         config: { enabled: true }
       };
-
       expect(properties.widgetId).toBe('widget-1');
       expect(properties.componentTypeId).toBe('TYPE-A');
       expect(properties.name).toBe('Test Component');
@@ -116,20 +103,17 @@ describe('WidgetComponent Model', () => {
       expect(properties.priority).toBe(75);
       expect(properties.config).toEqual({ enabled: true });
     });
-
     it('should allow optional properties', () => {
       const minimalProperties: WidgetComponentProperties = {
         widgetId: 'widget-1',
         componentTypeId: 'TYPE-A',
         name: 'Minimal Component'
       };
-
       expect(minimalProperties.status).toBeUndefined();
       expect(minimalProperties.priority).toBeUndefined();
       expect(minimalProperties.config).toBeUndefined();
     });
   });
-
   describe('Composite Key Structure', () => {
     it('should have correct location hierarchy', () => {
       const component: WidgetComponent = {
@@ -147,15 +131,14 @@ describe('WidgetComponent Model', () => {
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z',
         events: {
-          created: { at: new Date(), by: 'system' },
-          updated: { at: new Date(), by: 'system' }
+          created: { at: new Date() },
+          updated: { at: new Date() },
+          deleted: { at: null }
         }
       };
-
       expect(component.key.loc).toHaveLength(1);
       expect(component.key.loc[0].kt).toBe('widget');
       expect(component.key.loc[0].lk).toBe('widget-123');
     });
   });
 });
-

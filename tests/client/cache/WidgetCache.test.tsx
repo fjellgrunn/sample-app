@@ -576,7 +576,7 @@ describe('WidgetCache', () => {
 
       try {
         // Test development environment
-        process.env.NODE_ENV = 'development';
+        vi.stubEnv('NODE_ENV', 'development');
         const devRegistry = createRegistry();
         const devCache = createCache(
           mockWidgetApi,
@@ -588,7 +588,7 @@ describe('WidgetCache', () => {
         expect(devCache).toBeDefined();
 
         // Test production environment
-        process.env.NODE_ENV = 'production';
+        vi.stubEnv('NODE_ENV', 'production');
         const prodRegistry = createRegistry();
         const prodCache = createCache(
           mockWidgetApi,
@@ -600,7 +600,7 @@ describe('WidgetCache', () => {
         expect(prodCache).toBeDefined();
 
       } finally {
-        process.env.NODE_ENV = originalEnv;
+        vi.stubEnv('NODE_ENV', originalEnv);
       }
     });
 
@@ -737,7 +737,7 @@ describe('WidgetCache', () => {
       };
 
       const getSizeSpy = vi.spyOn(widgetCache.cacheMap, 'getCurrentSize');
-      getSizeSpy.mockReturnValueOnce(largeSizeInfo);
+      getSizeSpy.mockReturnValueOnce(Promise.resolve(largeSizeInfo));
 
       const stats = cacheUtils.getCacheStats();
 

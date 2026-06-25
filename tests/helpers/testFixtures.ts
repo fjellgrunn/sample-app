@@ -127,7 +127,7 @@ export class TestFixtures {
         deleted: { at: null }
       },
       refs: {
-        widgetType: { kt: 'widgetType', pk: widgetTypeId }
+        widgetType: { key: { kt: 'widgetType', pk: widgetTypeId } }
       },
       ...overrides
     };

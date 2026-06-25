@@ -219,7 +219,7 @@ describe('Database Class', () => {
       const sequelize = database.getSequelize();
 
       // In tests, logging should be a function for capturing SQL
-      expect(typeof sequelize.options.logging).toBe('function');
+      expect(typeof (sequelize as any).options?.logging).toBe('function');
     });
   });
 

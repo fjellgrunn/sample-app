@@ -87,25 +87,21 @@ export const widgetComponentCacheUtils = {
    * Get components by widget ID (for testing location-based queries)
    */
   getByWidget: async (widgetId: string) => {
-    return await widgetComponentCache.operations.query({
-      location: [{ kt: 'widget', lk: widgetId }],
-      params: {
-        finder: 'byWidget',
-        finderParams: { widgetId }
-      }
-    });
+    return await widgetComponentCache.operations.find(
+      'byWidget',
+      { widgetId },
+      [{ kt: 'widget', lk: widgetId }]
+    );
   },
 
   /**
    * Get components by status (for testing facet queries)
    */
   getByStatus: async (status: 'pending' | 'active' | 'complete') => {
-    return await widgetComponentCache.operations.query({
-      params: {
-        finder: 'byStatus',
-        finderParams: { status }
-      }
-    });
+    return await widgetComponentCache.operations.find(
+      'byStatus',
+      { status }
+    );
   }
 };
 

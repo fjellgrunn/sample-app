@@ -3,21 +3,21 @@
 import React, { createContext } from "react";
 
 import {
-  PItem,
-  PItemAdapter,
-  PItemLoad,
-  PItemQuery,
-  PItems,
-  PItemsQuery,
+  CItem,
+  CItemAdapter,
+  CItemLoad,
+  CItems,
+  CItemsQuery,
 } from "@fjell/providers";
-import { IQFactory, ItemQuery, PriKey } from "@fjell/core";
+import { ComKey, IQFactory, ItemQuery } from "@fjell/core";
 import { WidgetComponent } from "../../model/WidgetComponent";
 import { getWidgetComponentCacheSync } from "../cache/ClientCache";
+import { WidgetContext } from "./WidgetProvider";
 
 export const WidgetComponentAdapterContext =
-  createContext<PItemAdapter.ContextType<WidgetComponent, "widgetComponent", "widget"> | undefined>(undefined);
+  createContext<CItemAdapter.ContextType<WidgetComponent, "widgetComponent", "widget"> | undefined>(undefined);
 
-export const useWidgetComponentAdapter = () => PItemAdapter.usePItemAdapter<
+export const useWidgetComponentAdapter = () => CItemAdapter.useCItemAdapter<
   WidgetComponent,
   "widgetComponent",
   "widget"
@@ -30,7 +30,7 @@ export const WidgetComponentAdapter: React.FC<{
   const widgetComponentCache = getWidgetComponentCacheSync();
 
   // Create a typed version of the Adapter component
-  const TypedAdapter = PItemAdapter.Adapter as any;
+  const TypedAdapter = CItemAdapter.Adapter as any;
 
   return (
     <TypedAdapter
@@ -44,20 +44,20 @@ export const WidgetComponentAdapter: React.FC<{
 }
 
 export const WidgetComponentContext =
-  createContext<PItem.ContextType<WidgetComponent, 'widgetComponent', 'widget'> | undefined>(undefined);
+  createContext<CItem.ContextType<WidgetComponent, 'widgetComponent', 'widget'> | undefined>(undefined);
 
 export const useWidgetComponent = () =>
-  PItem.usePItem<WidgetComponent, 'widgetComponent', 'widget'>(WidgetComponentContext, 'WidgetComponentContext');
+  CItem.useCItem<WidgetComponent, 'widgetComponent', 'widget'>(WidgetComponentContext, 'WidgetComponentContext');
 
 export const WidgetComponentLoad: React.FC<{
-  ik: PriKey<'widgetComponent', 'widget'>;
+  ik: ComKey<'widgetComponent', 'widget'>;
   children: React.ReactNode;
 }> = (
   { ik, children }: {
-    ik: PriKey<'widgetComponent', 'widget'>;
+    ik: ComKey<'widgetComponent', 'widget'>;
     children: React.ReactNode;
   }
-) => PItemLoad<
+) => CItemLoad<
   WidgetComponent,
   "widgetComponent",
   "widget"
@@ -67,91 +67,70 @@ export const WidgetComponentLoad: React.FC<{
   adapter: WidgetComponentAdapterContext,
   context: WidgetComponentContext,
   contextName: 'WidgetComponentContext',
+  parent: WidgetContext as any,
+  parentContextName: 'WidgetContext',
   children,
 });
 
 export type WidgetComponentsContextType =
-  PItems.ContextType<WidgetComponent, 'widgetComponent', 'widget'>;
+  CItems.ContextType<WidgetComponent, 'widgetComponent', 'widget'>;
 
 export const WidgetComponentsContext =
   createContext<WidgetComponentsContextType | undefined>(undefined);
 
 export const useWidgetComponents = () =>
-  PItems.usePItems<WidgetComponent, 'widgetComponent', 'widget'>(WidgetComponentsContext, 'WidgetComponentsContext') as WidgetComponentsContextType;
+  CItems.useCItems<WidgetComponent, 'widgetComponent', 'widget'>(WidgetComponentsContext, 'WidgetComponentsContext') as WidgetComponentsContextType;
 
 export const WidgetComponentsQuery: React.FC<{
-  iq: ItemQuery<WidgetComponent, 'widgetComponent', 'widget'>;
+  query: ItemQuery;
   children: React.ReactNode;
 }> = ({
-  iq,
+  query,
   children
 }: {
-  iq: ItemQuery<WidgetComponent, 'widgetComponent', 'widget'>;
+  query: ItemQuery;
   children: React.ReactNode;
-}) => PItemsQuery<WidgetComponent, 'widgetComponent', 'widget'>({
+}) => CItemsQuery<WidgetComponent, 'widgetComponent', 'widget'>({
   name: 'WidgetComponentsQuery',
-  iq,
+  query,
   adapter: WidgetComponentAdapterContext,
   context: WidgetComponentsContext,
   contextName: 'WidgetComponentsContext',
+  parent: WidgetContext as any,
+  parentContextName: 'WidgetContext',
   children
 });
 
-export const WidgetComponentIQ = new IQFactory<WidgetComponent, 'widgetComponent', 'widget'>();
-
 // Hook to create widget component queries
 export const useWidgetComponentQuery = () => {
-  const adapter = useWidgetComponentAdapter();
-  
   return {
     /**
      * Query all components
      */
-    all: () => WidgetComponentIQ.all(),
-    
+    all: (): ItemQuery => IQFactory.all().toQuery(),
+
     /**
      * Query components by widget ID
      */
-    byWidget: (widgetId: string) =>
-      WidgetComponentIQ.custom({
-        location: [{ kt: 'widget', lk: widgetId }],
-        params: {
-          finder: 'byWidget',
-          finderParams: { widgetId }
-        }
-      }),
-    
+    byWidget: (widgetId: string): ItemQuery =>
+      IQFactory.all().condition('widgetId', widgetId, '==').toQuery(),
+
     /**
      * Query components by status
      */
-    byStatus: (status: 'pending' | 'active' | 'complete') =>
-      WidgetComponentIQ.custom({
-        params: {
-          finder: 'byStatus',
-          finderParams: { status }
-        }
-      }),
-    
+    byStatus: (status: 'pending' | 'active' | 'complete'): ItemQuery =>
+      IQFactory.all().condition('status', status, '==').toQuery(),
+
     /**
      * Query active components
      */
-    active: () =>
-      WidgetComponentIQ.custom({
-        params: {
-          finder: 'active'
-        }
-      }),
-    
+    active: (): ItemQuery =>
+      IQFactory.all().condition('status', 'active', '==').toQuery(),
+
     /**
      * Query components by component type
      */
-    byComponentType: (componentTypeId: string) =>
-      WidgetComponentIQ.custom({
-        params: {
-          finder: 'byComponentType',
-          finderParams: { componentTypeId }
-        }
-      }),
+    byComponentType: (componentTypeId: string): ItemQuery =>
+      IQFactory.all().condition('componentTypeId', componentTypeId, '==').toQuery(),
   };
 };
-
