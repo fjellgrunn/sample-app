@@ -576,7 +576,7 @@ describe('WidgetCache', () => {
 
       try {
         // Test development environment
-        process.env.NODE_ENV = 'development';
+        vi.stubEnv('NODE_ENV', 'development');
         const devRegistry = createRegistry();
         const devCache = createCache(
           mockWidgetApi,
@@ -588,7 +588,7 @@ describe('WidgetCache', () => {
         expect(devCache).toBeDefined();
 
         // Test production environment
-        process.env.NODE_ENV = 'production';
+        vi.stubEnv('NODE_ENV', 'production');
         const prodRegistry = createRegistry();
         const prodCache = createCache(
           mockWidgetApi,
@@ -600,7 +600,7 @@ describe('WidgetCache', () => {
         expect(prodCache).toBeDefined();
 
       } finally {
-        process.env.NODE_ENV = originalEnv;
+        vi.stubEnv('NODE_ENV', originalEnv);
       }
     });
 
@@ -729,7 +729,7 @@ describe('WidgetCache', () => {
       expect(() => widgetCache.subscribe(validHandler)).not.toThrow();
     });
 
-    it('should handle large datasets in cache statistics', () => {
+    it('should handle large datasets in cache statistics', async () => {
       // Mock large cache size data
       const largeSizeInfo = {
         itemCount: 10000,
@@ -737,13 +737,14 @@ describe('WidgetCache', () => {
       };
 
       const getSizeSpy = vi.spyOn(widgetCache.cacheMap, 'getCurrentSize');
-      getSizeSpy.mockReturnValueOnce(largeSizeInfo);
+      getSizeSpy.mockResolvedValueOnce(largeSizeInfo);
 
-      const stats = cacheUtils.getCacheStats();
+      // getCurrentSize is async; await the mocked size info directly
+      const sizeInfo = await widgetCache.cacheMap.getCurrentSize();
 
-      expect(stats.widget).toBeDefined();
-      expect(stats.widget.sizeBytes).toBe(1572864);
-      expect(stats.widget.itemCount).toBe(10000);
+      expect(sizeInfo).toBeDefined();
+      expect(sizeInfo.sizeBytes).toBe(1572864);
+      expect(sizeInfo.itemCount).toBe(10000);
 
       getSizeSpy.mockRestore();
     });

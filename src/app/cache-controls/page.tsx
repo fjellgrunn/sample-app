@@ -40,7 +40,7 @@ export default function CacheControlsPage() {
       addResult('Stats After Clear', statsAfterClear, true);
 
       // Test 4: Test invalidation
-      utils[selectedCache].invalidate();
+      await utils[selectedCache].invalidate();
       addResult(`${selectedCache} Cache Invalidation`, 'Query results invalidated', true);
 
       // Test 5: Get cache info
@@ -94,7 +94,7 @@ export default function CacheControlsPage() {
       addResult('Step 2', 'Would populate cache via normal API operations', true);
 
       // Test 3: Force invalidation
-      utils.invalidateAll();
+      await utils.invalidateAll();
       addResult('Step 3', 'All query results invalidated', true);
 
       // Test 4: Check cache state
@@ -117,13 +117,13 @@ export default function CacheControlsPage() {
 
       // Test cross-cache invalidation patterns
       addResult('Test 1', 'Invalidating widget cache', true);
-      utils.invalidateWidgets();
+      await utils.invalidateWidgets();
 
       addResult('Test 2', 'Invalidating widget type cache', true);
-      utils.invalidateWidgetTypes();
+      await utils.invalidateWidgetTypes();
 
       addResult('Test 3', 'Invalidating widget component cache', true);
-      utils.invalidateWidgetComponents();
+      await utils.invalidateWidgetComponents();
 
       const stats = await utils.getCacheStats();
       addResult('Final Stats', stats, true);

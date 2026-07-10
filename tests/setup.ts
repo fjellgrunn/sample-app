@@ -51,6 +51,8 @@ const mockIndexedDB = {
     onerror: null,
   })),
   deleteDatabase: vi.fn(),
+  cmp: vi.fn(),
+  databases: vi.fn().mockResolvedValue([]),
 };
 
 Object.defineProperty(window, 'indexedDB', {

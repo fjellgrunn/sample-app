@@ -279,7 +279,7 @@ describe('Database Edge Cases and Error Scenarios', () => {
       await database.initialize();
 
       const sequelize = database.getSequelize();
-      const loggingFunction = sequelize.options.logging;
+      const loggingFunction = (sequelize as any).options?.logging;
 
       expect(typeof loggingFunction).toBe('function');
 

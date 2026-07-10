@@ -18,6 +18,7 @@ Object.defineProperty(window, 'localStorage', {
 describe('WidgetAPI', () => {
   let mockGetHttpApi: any;
   let mockCreatePItemApi: any;
+  let mockCreateCItemApi: any;
   let widgetAPI: any;
 
   beforeEach(async () => {
@@ -30,13 +31,15 @@ describe('WidgetAPI', () => {
     // Mock the dependencies before importing
     mockGetHttpApi = vi.fn();
     mockCreatePItemApi = vi.fn();
+    mockCreateCItemApi = vi.fn();
 
     vi.doMock('@fjell/http-api', () => ({
       getHttpApi: mockGetHttpApi
     }));
 
     vi.doMock('@fjell/client-api', () => ({
-      createPItemApi: mockCreatePItemApi
+      createPItemApi: mockCreatePItemApi,
+      createCItemApi: mockCreateCItemApi
     }));
 
     // Setup mock returns
@@ -64,8 +67,24 @@ describe('WidgetAPI', () => {
       findOne: vi.fn()
     };
 
+    const mockCItemApi = {
+      action: vi.fn(),
+      all: vi.fn(),
+      allAction: vi.fn(),
+      allFacet: vi.fn(),
+      one: vi.fn(),
+      get: vi.fn(),
+      create: vi.fn(),
+      remove: vi.fn(),
+      update: vi.fn(),
+      facet: vi.fn(),
+      find: vi.fn(),
+      findOne: vi.fn()
+    };
+
     mockGetHttpApi.mockReturnValue(mockHttpApi);
     mockCreatePItemApi.mockReturnValue(mockPItemApi);
+    mockCreateCItemApi.mockReturnValue(mockCItemApi);
 
     // Import the module after mocking
     widgetAPI = await import('../../../src/client/api/WidgetAPI');

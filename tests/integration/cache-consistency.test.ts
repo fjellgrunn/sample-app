@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import type { ComKey } from '@fjell/core';
 
 /**
  * Cache Consistency Integration Tests
@@ -41,7 +42,7 @@ describe('Cache Consistency Integration Tests - Certification', () => {
         const module = await import('../../src/client/api/WidgetAPI');
         expect(module).toBeDefined();
         if (module.widgetComponentApi) {
-          expect(module.widgetComponentApi.operations).toBeDefined();
+          expect(module.widgetComponentApi).toBeDefined();
         }
       } catch (error) {
         // If import fails due to missing dependencies, that's expected in test environment
@@ -78,8 +79,6 @@ describe('Cache Consistency Integration Tests - Certification', () => {
     });
 
     it('[CERT-11] Should validate hierarchical location structure', async () => {
-      const { ComKey } = await import('@fjell/core');
-      
       const key: ComKey<'widgetComponent', 'widget'> = {
         kt: 'widgetComponent',
         pk: 'comp-456',
@@ -118,11 +117,11 @@ describe('Cache Consistency Integration Tests - Certification', () => {
       try {
         const module = await import('../../src/client/api/WidgetAPI');
         if (module.widgetComponentApi) {
-          expect(module.widgetComponentApi.operations.create).toBeDefined();
-          expect(module.widgetComponentApi.operations.get).toBeDefined();
-          expect(module.widgetComponentApi.operations.update).toBeDefined();
-          expect(module.widgetComponentApi.operations.remove).toBeDefined();
-          expect(module.widgetComponentApi.operations.all).toBeDefined();
+          expect(module.widgetComponentApi.create).toBeDefined();
+          expect(module.widgetComponentApi.get).toBeDefined();
+          expect(module.widgetComponentApi.update).toBeDefined();
+          expect(module.widgetComponentApi.remove).toBeDefined();
+          expect(module.widgetComponentApi.all).toBeDefined();
         }
       } catch (error) {
         // If import fails due to missing dependencies, that's expected in test environment
@@ -135,8 +134,8 @@ describe('Cache Consistency Integration Tests - Certification', () => {
       try {
         const module = await import('../../src/client/api/WidgetAPI');
         if (module.widgetComponentApi) {
-          // API supports custom finders through query operation
-          expect(module.widgetComponentApi.operations.query).toBeDefined();
+          // API supports custom finders through find operation
+          expect(module.widgetComponentApi.find).toBeDefined();
         }
       } catch (error) {
         // If import fails due to missing dependencies, that's expected in test environment
