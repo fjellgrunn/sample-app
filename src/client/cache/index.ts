@@ -1,6 +1,7 @@
 import { widgetCache, widgetCacheUtils } from './WidgetCache';
 import { widgetTypeCache, widgetTypeCacheUtils } from './WidgetTypeCache';
 import { widgetComponentCache, widgetComponentCacheUtils } from './WidgetComponentCache';
+import { invalidateCacheQueries } from './invalidateCacheQueries';
 
 // Export the registry
 export { cacheRegistry } from './registry';
@@ -25,8 +26,7 @@ widgetTypeCache.subscribe((event) => {
 
     // Invalidate widget caches when widget types change
     if (event.type === 'item_removed' && event.item?.id) {
-      // Clear any cached widgets of this type
-      widgetCache.cacheMap.clearQueryResults();
+      void invalidateCacheQueries(widgetCache, 'cross_cache_widgetType_removed');
     }
   }
 });
@@ -35,8 +35,7 @@ widgetTypeCache.subscribe((event) => {
 widgetCache.subscribe((event) => {
   if (event.type === 'item_removed' && event.item?.id) {
     console.log(`Widget removed, invalidating related components:`, event.item.id);
-    // When a widget is removed, invalidate all its components
-    widgetComponentCache.cacheMap.clearQueryResults();
+    void invalidateCacheQueries(widgetComponentCache, 'cross_cache_widget_removed');
   }
 });
 
@@ -70,31 +69,33 @@ export const cacheUtils = {
   /**
    * Manually invalidate all widget-related caches when external changes occur
    */
-  invalidateAll: () => {
-    widgetCacheUtils.invalidate();
-    widgetTypeCacheUtils.invalidate();
-    widgetComponentCacheUtils.invalidate();
+  invalidateAll: async () => {
+    await Promise.all([
+      widgetCacheUtils.invalidate(),
+      widgetTypeCacheUtils.invalidate(),
+      widgetComponentCacheUtils.invalidate()
+    ]);
   },
 
   /**
    * Manually invalidate widget caches when external changes occur
    */
-  invalidateWidgets: () => {
-    widgetCacheUtils.invalidate();
+  invalidateWidgets: async () => {
+    await widgetCacheUtils.invalidate();
   },
 
   /**
    * Manually invalidate widget type caches when external changes occur
    */
-  invalidateWidgetTypes: () => {
-    widgetTypeCacheUtils.invalidate();
+  invalidateWidgetTypes: async () => {
+    await widgetTypeCacheUtils.invalidate();
   },
 
   /**
    * Manually invalidate widget component caches when external changes occur
    */
-  invalidateWidgetComponents: () => {
-    widgetComponentCacheUtils.invalidate();
+  invalidateWidgetComponents: async () => {
+    await widgetComponentCacheUtils.invalidate();
   },
 
   /**
