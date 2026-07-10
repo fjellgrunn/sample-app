@@ -88,9 +88,9 @@ export default function CacheDebugPage() {
       const utils = await getCacheUtils();
       
       if (cacheName === 'all') {
-        utils.invalidateAll();
+        await utils.invalidateAll();
       } else {
-        utils[cacheName].invalidate();
+        await utils[cacheName].invalidate();
       }
       
       await loadCacheData();

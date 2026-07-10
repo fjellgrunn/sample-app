@@ -3,6 +3,7 @@ import { createCoordinate } from '@fjell/core';
 import type { WidgetComponent } from '../../model/WidgetComponent';
 import { widgetComponentApi } from '../api/WidgetAPI';
 import { cacheRegistry } from './registry';
+import { invalidateCacheQueries } from './invalidateCacheQueries';
 
 // Cache configuration for WidgetComponent with IndexedDB and Two Layer Caching
 // This demonstrates composite entity relationships with widget as parent
@@ -56,8 +57,8 @@ export const widgetComponentCacheUtils = {
   /**
    * Manually invalidate component caches when external changes occur
    */
-  invalidate: () => {
-    widgetComponentCache.cacheMap.clearQueryResults();
+  invalidate: async () => {
+    await invalidateCacheQueries(widgetComponentCache, 'widgetComponent_manual_invalidate');
   },
 
   /**
