@@ -48,3 +48,8 @@ processed/
 .next
 
 .kodrdriv*
+
+# local SQLite databases
+*.db
+*.sqlite
+*.sqlite3

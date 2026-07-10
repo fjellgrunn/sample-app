@@ -1,4 +1,4 @@
-import { createCItemApi, createPItemApi, CItemApi, PItemApi } from '@fjell/client-api';
+import { CItemApi, createCItemApi, createPItemApi, PItemApi } from '@fjell/client-api';
 import type { ApiParams } from '@fjell/http-api';
 import { getHttpApi } from '@fjell/http-api';
 import type { Widget } from '../../model/Widget';

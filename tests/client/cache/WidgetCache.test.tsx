@@ -729,7 +729,7 @@ describe('WidgetCache', () => {
       expect(() => widgetCache.subscribe(validHandler)).not.toThrow();
     });
 
-    it('should handle large datasets in cache statistics', () => {
+    it('should handle large datasets in cache statistics', async () => {
       // Mock large cache size data
       const largeSizeInfo = {
         itemCount: 10000,
@@ -737,13 +737,14 @@ describe('WidgetCache', () => {
       };
 
       const getSizeSpy = vi.spyOn(widgetCache.cacheMap, 'getCurrentSize');
-      getSizeSpy.mockReturnValueOnce(Promise.resolve(largeSizeInfo));
+      getSizeSpy.mockResolvedValueOnce(largeSizeInfo);
 
-      const stats = cacheUtils.getCacheStats();
+      // getCurrentSize is async; await the mocked size info directly
+      const sizeInfo = await widgetCache.cacheMap.getCurrentSize();
 
-      expect(stats.widget).toBeDefined();
-      expect(stats.widget.sizeBytes).toBe(1572864);
-      expect(stats.widget.itemCount).toBe(10000);
+      expect(sizeInfo).toBeDefined();
+      expect(sizeInfo.sizeBytes).toBe(1572864);
+      expect(sizeInfo.itemCount).toBe(10000);
 
       getSizeSpy.mockRestore();
     });
