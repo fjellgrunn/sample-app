@@ -19,15 +19,15 @@ interface CacheStats {
 }
 
 interface AllCacheInfo {
-  widget: CacheInfo;
-  widgetType: CacheInfo;
-  widgetComponent: CacheInfo;
+  widget: any;
+  widgetType: any;
+  widgetComponent: any;
 }
 
 interface AllCacheStats {
-  widget: CacheStats;
-  widgetType: CacheStats;
-  widgetComponent: CacheStats;
+  widget: any;
+  widgetType: any;
+  widgetComponent: any;
 }
 
 export default function CacheDebugPage() {
@@ -88,9 +88,9 @@ export default function CacheDebugPage() {
       const utils = await getCacheUtils();
       
       if (cacheName === 'all') {
-        utils.invalidateAll();
+        await utils.invalidateAll();
       } else {
-        utils[cacheName].invalidate();
+        await utils[cacheName].invalidate();
       }
       
       await loadCacheData();
@@ -137,8 +137,8 @@ export default function CacheDebugPage() {
     cacheName
   }: {
     title: string;
-    info: CacheInfo;
-    stats: CacheStats;
+    info: any;
+    stats: any;
     cacheName: 'widget' | 'widgetType' | 'widgetComponent';
   }) => (
     <div className="summary-card">

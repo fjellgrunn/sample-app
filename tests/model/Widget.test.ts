@@ -45,8 +45,8 @@ describe('Widget Model', () => {
 
       expect(widget.refs).toBeDefined();
       expect(widget.refs?.widgetType).toBeDefined();
-      expect(widget.refs?.widgetType.kt).toBe('widgetType');
-      expect(widget.refs?.widgetType.pk).toBe(widgetTypeId);
+      expect(widget.refs?.widgetType.key.kt).toBe('widgetType');
+      expect(widget.refs?.widgetType.key.pk).toBe(widgetTypeId);
     });
   });
 

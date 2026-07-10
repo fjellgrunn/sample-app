@@ -27,7 +27,9 @@ export const createWidgetComponentRouter = (
   logger.info('Creating WidgetComponent router...');
 
   // Create the PItemRouter for standard CRUD operations
-  const pItemRouter = new PItemRouter(widgetComponentLibrary, 'widgetComponent');
+  // Cast: WidgetComponent is a contained item (L1='widget'), but we route it as a
+  // standalone primary item at /widget-components. The library is structurally compatible.
+  const pItemRouter = new PItemRouter(widgetComponentLibrary as any, 'widgetComponent');
 
   logger.info('WidgetComponent router created successfully');
   return pItemRouter.getRouter();

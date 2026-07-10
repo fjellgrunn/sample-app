@@ -3,6 +3,7 @@ import { createCoordinate } from '@fjell/core';
 import type { WidgetType } from '../../model/WidgetType';
 import { widgetTypeApi } from '../api/WidgetAPI';
 import { cacheRegistry } from './registry';
+import { invalidateCacheQueries } from './invalidateCacheQueries';
 
 // Cache configuration optimized for browser environment with IndexedDB and Two Layer Caching
 const createCacheOptions = (dbName: string, storeName: string) => ({
@@ -54,8 +55,8 @@ export const widgetTypeCacheUtils = {
   /**
    * Manually invalidate widget type caches when external changes occur
    */
-  invalidate: () => {
-    widgetTypeCache.cacheMap.clearQueryResults();
+  invalidate: async () => {
+    await invalidateCacheQueries(widgetTypeCache, 'widgetType_manual_invalidate');
   },
 
   /**

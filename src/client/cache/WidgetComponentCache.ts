@@ -3,6 +3,7 @@ import { createCoordinate } from '@fjell/core';
 import type { WidgetComponent } from '../../model/WidgetComponent';
 import { widgetComponentApi } from '../api/WidgetAPI';
 import { cacheRegistry } from './registry';
+import { invalidateCacheQueries } from './invalidateCacheQueries';
 
 // Cache configuration for WidgetComponent with IndexedDB and Two Layer Caching
 // This demonstrates composite entity relationships with widget as parent
@@ -56,8 +57,8 @@ export const widgetComponentCacheUtils = {
   /**
    * Manually invalidate component caches when external changes occur
    */
-  invalidate: () => {
-    widgetComponentCache.cacheMap.clearQueryResults();
+  invalidate: async () => {
+    await invalidateCacheQueries(widgetComponentCache, 'widgetComponent_manual_invalidate');
   },
 
   /**
@@ -87,25 +88,21 @@ export const widgetComponentCacheUtils = {
    * Get components by widget ID (for testing location-based queries)
    */
   getByWidget: async (widgetId: string) => {
-    return await widgetComponentCache.operations.query({
-      location: [{ kt: 'widget', lk: widgetId }],
-      params: {
-        finder: 'byWidget',
-        finderParams: { widgetId }
-      }
-    });
+    return await widgetComponentCache.operations.find(
+      'byWidget',
+      { widgetId },
+      [{ kt: 'widget', lk: widgetId }]
+    );
   },
 
   /**
    * Get components by status (for testing facet queries)
    */
   getByStatus: async (status: 'pending' | 'active' | 'complete') => {
-    return await widgetComponentCache.operations.query({
-      params: {
-        finder: 'byStatus',
-        finderParams: { status }
-      }
-    });
+    return await widgetComponentCache.operations.find(
+      'byStatus',
+      { status }
+    );
   }
 };
 
