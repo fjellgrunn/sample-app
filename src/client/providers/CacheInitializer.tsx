@@ -81,14 +81,10 @@ export const CacheInitializer: React.FC<CacheInitializerProps> = ({ children }) 
         console.log('📝 Providers will load data on-demand using cache-first operations');
 
         // Set dummy results to avoid breaking the rest of the initialization
-        const widgetResult = [widgetCache, []];
-        const widgetTypeResult = [widgetTypeCache, []];
+        const widgets: any[] = [];
+        const widgetTypes: any[] = [];
 
-        // Extract the actual data from the [CacheMap, Items[]] tuple
-        const widgets = Array.isArray(widgetResult) ? widgetResult[1] : [];
-        const widgetTypes = Array.isArray(widgetTypeResult) ? widgetTypeResult[1] : [];
-
-        console.log(`✅ Caches initialized with ${widgets?.length || 0} widgets and ${widgetTypes?.length || 0} widget types`);
+        console.log(`✅ Caches initialized with ${widgets.length} widgets and ${widgetTypes.length} widget types`);
 
         // Check if data is actually in the cache maps
         console.log('🔍 Checking cache contents after initialization:');
