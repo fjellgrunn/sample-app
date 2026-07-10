@@ -1,4 +1,4 @@
-import { createPItemApi, PItemApi } from '@fjell/client-api';
+import { CItemApi, createCItemApi, createPItemApi, PItemApi } from '@fjell/client-api';
 import type { ApiParams } from '@fjell/http-api';
 import { getHttpApi } from '@fjell/http-api';
 import type { Widget } from '../../model/Widget';
@@ -82,10 +82,10 @@ export const widgetTypeApi: PItemApi<WidgetType, 'widgetType'> = createPItemApi(
   }
 );
 
-export const widgetComponentApi: PItemApi<WidgetComponent, 'widgetComponent', 'widget'> = createPItemApi(
+export const widgetComponentApi: CItemApi<WidgetComponent, 'widgetComponent', 'widget'> = createCItemApi(
   httpApi,
   'widgetComponent',
-  'widget-components', // API path
+  ['widgets', 'widget-components'], // parent path, item path
   {
     readAuthenticated: false,
     writeAuthenticated: true,

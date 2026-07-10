@@ -45,7 +45,7 @@ describe('Database Models', () => {
         name: 'Test Create Widget Type'
       });
 
-      const widgetType = await models.WidgetTypeModel.create(widgetTypeData);
+      const widgetType = await models.WidgetTypeModel.create(widgetTypeData as any);
 
       expect(widgetType.id).toBeDefined();
       expect(widgetType.code).toBe('TEST_CREATE');
@@ -61,10 +61,10 @@ describe('Database Models', () => {
       });
 
       // Create first widget type
-      await models.WidgetTypeModel.create(widgetTypeData);
+      await models.WidgetTypeModel.create(widgetTypeData as any);
 
       // Try to create duplicate - should fail
-      await expect(models.WidgetTypeModel.create(widgetTypeData))
+      await expect(models.WidgetTypeModel.create(widgetTypeData as any))
         .rejects.toThrow();
     });
 
@@ -143,7 +143,7 @@ describe('Database Models', () => {
         name: 'Test Create Widget'
       });
 
-      const widget = await models.WidgetModel.create(widgetData);
+      const widget = await models.WidgetModel.create(widgetData as any);
 
       expect(widget.id).toBeDefined();
       expect(widget.widgetTypeId).toBe(widgetType.id);
@@ -156,7 +156,7 @@ describe('Database Models', () => {
     it('should validate foreign key constraint', async () => {
       const widgetData = TestFixtures.createWidgetProperties('invalid-widget-type-id');
 
-      await expect(models.WidgetModel.create(widgetData))
+      await expect(models.WidgetModel.create(widgetData as any))
         .rejects.toThrow();
     });
 
@@ -292,7 +292,7 @@ describe('Database Models', () => {
 
   describe('Database Indexes', () => {
     it('should have indexes for performance', async () => {
-      const indexes = await sequelize.getQueryInterface().showIndex('widget_types');
+      const indexes = await sequelize.getQueryInterface().showIndex('widget_types') as any[];
 
       // Check for unique index on code
       const uniqueCodeIndex = indexes.find((index: any) =>
@@ -308,7 +308,7 @@ describe('Database Models', () => {
     });
 
     it('should have widget indexes for performance', async () => {
-      const indexes = await sequelize.getQueryInterface().showIndex('widgets');
+      const indexes = await sequelize.getQueryInterface().showIndex('widgets') as any[];
 
       // Check for index on widgetTypeId
       const typeIdIndex = indexes.find((index: any) =>

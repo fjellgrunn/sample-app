@@ -15,7 +15,7 @@ export interface Widget extends Item<'widget'> {
 
   // References to related objects
   refs?: {
-    widgetType: PriKey<'widgetType'>;
+    widgetType: { key: PriKey<'widgetType'> };
   };
 }
 

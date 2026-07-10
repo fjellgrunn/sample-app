@@ -107,7 +107,7 @@ export function CacheDemo() {
           cacheHit = Math.random() > 0.5; // Simulate cache behavior - real implementation would track this
         } else if (queryType === 'finder' && finderName) {
           // Use the adapter's finder method directly
-          data = await widgetAdapter.find(finderName, finderParams || {});
+          data = (await widgetAdapter.find(finderName, finderParams || {})).items;
           cacheHit = Math.random() > 0.5; // Simulate cache behavior
         }
       } else {
@@ -117,7 +117,7 @@ export function CacheDemo() {
           cacheHit = Math.random() > 0.5; // Simulate cache behavior
         } else if (queryType === 'finder' && finderName) {
           // Use the adapter's finder method directly
-          data = await widgetTypeAdapter.find(finderName, finderParams || {});
+          data = (await widgetTypeAdapter.find(finderName, finderParams || {})).items;
           cacheHit = Math.random() > 0.5; // Simulate cache behavior
         }
       }
